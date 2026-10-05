@@ -1,5 +1,6 @@
 package com.freefcc.app
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -30,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +62,14 @@ private val TextDim = Color(0xFF4A5374)
 
 private val BottomNavHeight = 72.dp
 
+/** Colour for a log entry or status line. */
+private fun Tone.color(): Color = when (this) {
+    Tone.OK -> Green
+    Tone.ERROR -> Red
+    Tone.BUSY -> Amber
+    Tone.INFO -> Cyan.copy(0.6f)
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // Activity
 // ═══════════════════════════════════════════════════════════════════════
@@ -66,6 +77,11 @@ private val BottomNavHeight = 72.dp
 class MainActivity : ComponentActivity() {
 
     private val viewModel: FccViewModel by viewModels()
+
+    /** Applies the in-app language choice before any string is resolved. */
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(Lang.wrap(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +153,7 @@ private fun AppRoot(viewModel: FccViewModel) {
             when (page) {
                 0 -> FccPage(state, viewModel)
                 1 -> InfoPage(state, viewModel)
-                2 -> LogPage(state)
+                2 -> LogPage(state, viewModel)
                 3 -> UpdatePage(state, viewModel)
                 4 -> SupportPage()
             }
@@ -185,18 +201,18 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Update available — v${state.updateInfo!!.version}",
+                            stringResource(R.string.update_banner_title, state.updateInfo!!.version),
                             color = Green, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
                         )
                         Spacer(Modifier.height(2.dp))
                         Text(
-                            "Tap Update to install",
+                            stringResource(R.string.update_banner_hint),
                             color = TextDim, fontSize = 12.sp
                         )
                     }
                     Icon(
                         Icons.Filled.NewReleases,
-                        contentDescription = "Update available",
+                        contentDescription = stringResource(R.string.cd_update_available),
                         tint = Green,
                         modifier = Modifier.size(24.dp)
                     )
@@ -215,18 +231,18 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     ProgressDisplay(state.busyProgress, state.message)
                 }
                 !state.isConnected -> {
-                    BodyText("Connect your drone to the controller, then power it on.")
+                    BodyText(stringResource(R.string.fcc_connect_hint))
                     Spacer(Modifier.height(20.dp))
-                    GlowButton("Connect", Cyan, enabled = !state.isHardwareBusy) { viewModel.connect() }
+                    GlowButton(stringResource(R.string.btn_connect), Cyan, enabled = !state.isHardwareBusy) { viewModel.connect() }
                 }
                 state.isFccEnabled -> {
-                    BodyText("FCC mode is active.", Green)
+                    BodyText(stringResource(R.string.fcc_active), Green)
                     Spacer(Modifier.height(20.dp))
-                    GlowButton("Stop FCC Mode", Red, enabled = !state.isHardwareBusy) { viewModel.disableFcc() }
+                    GlowButton(stringResource(R.string.btn_stop_fcc), Red, enabled = !state.isHardwareBusy) { viewModel.disableFcc() }
                     Spacer(Modifier.height(12.dp))
-                    GlowButton("Re-Apply FCC", Cyan, filled = false, enabled = !state.isHardwareBusy) { viewModel.enableFcc() }
+                    GlowButton(stringResource(R.string.btn_reapply_fcc), Cyan, filled = false, enabled = !state.isHardwareBusy) { viewModel.enableFcc() }
                     Spacer(Modifier.height(12.dp))
-                    GlowButton("Launch DJI Fly", Green, filled = false, enabled = !state.isHardwareBusy) {
+                    GlowButton(stringResource(R.string.btn_launch_fly), Green, filled = false, enabled = !state.isHardwareBusy) {
                         viewModel.launchDjiFly()
                     }
                     Spacer(Modifier.height(16.dp))
@@ -236,11 +252,11 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Keepalive", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.keepalive_title), color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             Spacer(Modifier.height(2.dp))
                             Text(
-                                if (state.isKeepaliveRunning) "Re-applying FCC every 2s to prevent CE reset"
-                                else "Keep FCC active while DJI Fly runs",
+                                if (state.isKeepaliveRunning) stringResource(R.string.keepalive_running)
+                                else stringResource(R.string.keepalive_idle),
                                 color = if (state.isKeepaliveRunning) Green else TextGray,
                                 fontSize = 11.sp,
                                 lineHeight = 15.sp
@@ -266,10 +282,10 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                         BodyText(state.message)
                         Spacer(Modifier.height(20.dp))
                     } else {
-                        BodyText("Tap the button below to enable FCC mode.")
+                        BodyText(stringResource(R.string.fcc_enable_hint))
                         Spacer(Modifier.height(20.dp))
                     }
-                    GlowButton("Enable FCC Mode", Cyan, enabled = !state.isHardwareBusy) { viewModel.enableFcc() }
+                    GlowButton(stringResource(R.string.btn_enable_fcc), Cyan, enabled = !state.isHardwareBusy) { viewModel.enableFcc() }
                 }
             }
 
@@ -299,7 +315,7 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            "4G Mode",
+                            stringResource(R.string.fourg_title),
                             color = TextWhite,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
@@ -309,7 +325,7 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     Spacer(Modifier.height(12.dp))
                     BodyText(
                         if (state.fourGMessage.isNotEmpty()) state.fourGMessage
-                        else "Sends 4G activation frames to the aircraft. No status is read back — check the DJI Fly app or Cellular Dongle to confirm.",
+                        else stringResource(R.string.fourg_desc),
                         TextGray
                     )
 
@@ -323,8 +339,8 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     OutlinedTextField(
                         value = serialField,
                         onValueChange = { serialField = it.trim() },
-                        label = { Text("Aircraft serial") },
-                        placeholder = { Text("auto-detected, or type it") },
+                        label = { Text(stringResource(R.string.serial_label)) },
+                        placeholder = { Text(stringResource(R.string.serial_placeholder)) },
                         singleLine = true,
                         enabled = !state.isHardwareBusy,
                         modifier = Modifier.fillMaxWidth(),
@@ -342,12 +358,12 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     )
                     Spacer(Modifier.height(8.dp))
                     GlowButton(
-                        if (state.isProbingSerial) "Reading serial…" else "Read serial from aircraft",
+                        if (state.isProbingSerial) stringResource(R.string.btn_reading_serial) else stringResource(R.string.btn_read_serial),
                         Cyan, filled = false, enabled = !state.isHardwareBusy
                     ) { viewModel.probeSerial() }
                     if (serialField.isNotBlank() && serialField != state.manualSerial) {
                         Spacer(Modifier.height(8.dp))
-                        GlowButton("Use this serial for 4G", Cyan, filled = false, enabled = !state.isHardwareBusy) {
+                        GlowButton(stringResource(R.string.btn_use_serial), Cyan, filled = false, enabled = !state.isHardwareBusy) {
                             viewModel.setManualSerial(serialField)
                         }
                     }
@@ -355,9 +371,9 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     Spacer(Modifier.height(20.dp))
 
                     if (state.is4gBusy) {
-                        ProgressDisplay(state.busyProgress, "Sending 4G activation frames...")
+                        ProgressDisplay(state.busyProgress, stringResource(R.string.fourg_sending))
                     } else {
-                        GlowButton("Send 4G Activation Frames", Amber, enabled = !state.isHardwareBusy) {
+                        GlowButton(stringResource(R.string.btn_send_4g), Amber, enabled = !state.isHardwareBusy) {
                             viewModel.send4gActivationFrames()
                         }
                     }
@@ -374,10 +390,10 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("External LED", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.led_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Turn aircraft arm LEDs on or off. Requires DJI Fly running with aircraft connected.",
+                        stringResource(R.string.led_desc),
                         color = TextGray,
                         fontSize = 12.sp,
                         lineHeight = 17.sp
@@ -385,8 +401,13 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     if (state.ledStatus.isNotEmpty()) {
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "Status: ${state.ledStatus}",
-                            color = if (state.ledStatus == "ON") Green else if (state.ledStatus == "OFF") TextGray else Amber,
+                            stringResource(R.string.led_status_fmt, state.ledStatus),
+                            color = when (state.ledTone) {
+                                Tone.OK -> Green
+                                Tone.INFO -> TextGray
+                                Tone.BUSY -> Amber
+                                Tone.ERROR -> Red
+                            },
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -408,7 +429,7 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     border = BorderStroke(1.dp, Green.copy(0.3f)),
                     modifier = Modifier.weight(1f).height(48.dp)
                 ) {
-                    Text("LED ON", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(stringResource(R.string.btn_led_on), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
                 Button(
                     onClick = { viewModel.setLed(false) },
@@ -423,7 +444,7 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     border = BorderStroke(1.5.dp, TextGray.copy(0.5f)),
                     modifier = Modifier.weight(1f).height(48.dp)
                 ) {
-                    Text("LED OFF", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(stringResource(R.string.btn_led_off), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }
@@ -436,10 +457,10 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Auto-FCC", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.autofcc_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Auto-connect, apply FCC, start keepalive, and launch DJI Fly.",
+                        stringResource(R.string.autofcc_desc),
                         color = TextGray,
                         fontSize = 12.sp,
                         lineHeight = 17.sp
@@ -473,25 +494,63 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(56.dp))
-        PageTitle("Device Info", Icons.Outlined.Info)
+        PageTitle(stringResource(R.string.info_title), Icons.Outlined.Info)
         Spacer(Modifier.height(28.dp))
 
         GlowCard {
-            Text("Connection", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.info_connection), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(16.dp))
-            InfoRow("Controller", state.controllerModel.ifEmpty { "Unknown" })
+            InfoRow(stringResource(R.string.info_controller), state.controllerModel.ifEmpty { stringResource(R.string.unknown) })
             Spacer(Modifier.height(10.dp))
             DividerLine()
             Spacer(Modifier.height(10.dp))
             InfoRow(
-                "Status",
-                if (state.isConnected) "Connected" else "Disconnected",
+                stringResource(R.string.info_status),
+                if (state.isConnected) stringResource(R.string.status_connected) else stringResource(R.string.status_disconnected),
                 valueColor = if (state.isConnected) Green else TextGray
             )
             Spacer(Modifier.height(10.dp))
             DividerLine()
             Spacer(Modifier.height(10.dp))
-            InfoRow("Aircraft S/N", state.aircraftSerial.ifEmpty { "Not detected" })
+            InfoRow(stringResource(R.string.info_aircraft_sn), state.aircraftSerial.ifEmpty { stringResource(R.string.not_detected) })
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Language - DJI controllers often lack the system language setting,
+        // so the choice is made here and stored by the app (see Lang).
+        val activity = LocalContext.current as? android.app.Activity
+        GlowCard {
+            Text(stringResource(R.string.lang_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Lang.OPTIONS.forEach { code ->
+                    val selected = state.language == code
+                    val label = when (code) {
+                        "en" -> stringResource(R.string.lang_en)
+                        "pl" -> stringResource(R.string.lang_pl)
+                        else -> stringResource(R.string.lang_system)
+                    }
+                    Button(
+                        onClick = {
+                            if (!selected) {
+                                viewModel.setLanguage(code)
+                                activity?.recreate()
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selected) Cyan else Color.Transparent,
+                            contentColor = if (selected) BgDark else Cyan
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, Cyan.copy(if (selected) 0.3f else 0.6f)),
+                        contentPadding = PaddingValues(horizontal = 4.dp),
+                        modifier = Modifier.weight(1f).height(44.dp)
+                    ) {
+                        Text(label, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
+                    }
+                }
+            }
         }
 
         Spacer(Modifier.height(16.dp))
@@ -502,7 +561,7 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Version Info", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.info_version), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 IconButton(
                     onClick = { viewModel.queryDeviceInfo() },
                     enabled = state.isConnected && !state.isQueryingInfo && !state.isHardwareBusy,
@@ -515,7 +574,7 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
                             modifier = Modifier.size(22.dp)
                         )
                     } else {
-                        Icon(Icons.Default.Refresh, "Query", tint = Cyan, modifier = Modifier.size(24.dp))
+                        Icon(Icons.Default.Refresh, stringResource(R.string.cd_query), tint = Cyan, modifier = Modifier.size(24.dp))
                     }
                 }
             }
@@ -531,9 +590,9 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 )
             } else if (!state.isConnected) {
-                BodyText("Connect to the controller first.", TextDim)
+                BodyText(stringResource(R.string.info_connect_first), TextDim)
             } else {
-                BodyText("Tap the refresh button to query version info.")
+                BodyText(stringResource(R.string.info_tap_refresh))
             }
         }
     }
@@ -544,7 +603,7 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
 // ═══════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun LogPage(state: AppState) {
+private fun LogPage(state: AppState, viewModel: FccViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -554,8 +613,17 @@ private fun LogPage(state: AppState) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(56.dp))
-        PageTitle("Activity Log", Icons.Outlined.History)
+        PageTitle(stringResource(R.string.log_title), Icons.Outlined.History)
         Spacer(Modifier.height(28.dp))
+
+        // Save the log to Download/FreeFCC - readable later without network.
+        GlowButton(
+            stringResource(R.string.btn_save_log),
+            Cyan,
+            filled = false,
+            enabled = state.logMessages.isNotEmpty() && !state.isExportingLog
+        ) { viewModel.exportLog() }
+        Spacer(Modifier.height(16.dp))
 
         GlowCard {
             if (state.logMessages.isEmpty()) {
@@ -563,7 +631,7 @@ private fun LogPage(state: AppState) {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    BodyText("No activity yet.", TextDim)
+                    BodyText(stringResource(R.string.log_empty), TextDim)
                 }
             } else {
                 Column(
@@ -573,31 +641,14 @@ private fun LogPage(state: AppState) {
                         .verticalScroll(rememberScrollState())
                 ) {
                     state.logMessages.forEachIndexed { index, entry ->
-                        val color = when {
-                            entry.contains("enabled", true) ||
-                            entry.contains("connected", true) ||
-                            entry.contains("restored", true) ||
-                            entry.contains("received", true) -> Green
-
-                            entry.contains("fail", true) ||
-                            entry.contains("error", true) -> Red
-
-                            entry.contains("Enabling", true) ||
-                            entry.contains("Disabling", true) ||
-                            entry.contains("Probing", true) ||
-                            entry.contains("Querying", true) ||
-                            entry.contains("Loaded", true) -> Amber
-
-                            else -> Cyan.copy(0.6f)
-                        }
                         if (index > 0) {
                             Spacer(Modifier.height(2.dp))
                             DividerLine(alpha = 0.3f)
                             Spacer(Modifier.height(2.dp))
                         }
                         Text(
-                            entry,
-                            color = color,
+                            entry.toString(),
+                            color = entry.tone.color(),
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier.padding(vertical = 6.dp)
@@ -624,7 +675,7 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(56.dp))
-        PageTitle("Updates", Icons.Outlined.SystemUpdate)
+        PageTitle(stringResource(R.string.updates_title), Icons.Outlined.SystemUpdate)
 
         if (state.isCheckingUpdate) {
             Spacer(Modifier.height(28.dp))
@@ -635,13 +686,37 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
                 ) {
                     CircularProgressIndicator(strokeWidth = 2.5.dp, color = Cyan, modifier = Modifier.size(40.dp))
                     Spacer(Modifier.height(16.dp))
-                    BodyText("Checking GitHub for latest release...", Cyan)
+                    BodyText(stringResource(R.string.update_checking), Cyan)
                 }
             }
             return@Column
         }
 
         val info = state.updateInfo
+        if (info == null && state.updateNoRelease) {
+            Spacer(Modifier.height(28.dp))
+            GlowCard {
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(Icons.Filled.CheckCircle, null, tint = TextDim, modifier = Modifier.size(44.dp))
+                    Spacer(Modifier.height(14.dp))
+                    BodyText(stringResource(R.string.update_no_release), TextGray)
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        stringResource(R.string.update_no_release_hint, UpdateChecker.REPO, BuildConfig.VERSION_NAME),
+                        color = TextDim, fontSize = 12.sp, lineHeight = 17.sp, textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    GlowButton(stringResource(R.string.btn_check_again), Cyan, filled = false) {
+                        viewModel.checkForUpdates(force = true)
+                    }
+                }
+            }
+            return@Column
+        }
+
         if (info == null && state.updateChecked) {
             Spacer(Modifier.height(28.dp))
             GlowCard {
@@ -651,14 +726,14 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
                 ) {
                     Icon(Icons.Outlined.CloudOff, null, tint = TextDim, modifier = Modifier.size(44.dp))
                     Spacer(Modifier.height(14.dp))
-                    BodyText("Could not check for updates.", TextGray)
+                    BodyText(stringResource(R.string.update_check_failed), TextGray)
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        "Make sure you're connected to Wi-Fi and try again.",
+                        stringResource(R.string.update_check_failed_hint),
                         color = TextDim, fontSize = 12.sp, lineHeight = 17.sp
                     )
                     Spacer(Modifier.height(20.dp))
-                    GlowButton("Retry", Cyan) { viewModel.checkForUpdates(force = true) }
+                    GlowButton(stringResource(R.string.btn_retry), Cyan) { viewModel.checkForUpdates(force = true) }
                 }
             }
             return@Column
@@ -676,14 +751,14 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        if (state.updateAvailable) "Update Available" else "Up to Date",
+                        if (state.updateAvailable) stringResource(R.string.update_available_title) else stringResource(R.string.up_to_date),
                         color = if (state.updateAvailable) Green else TextGray,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Current: v${FccViewModel.APP_VERSION}",
+                        stringResource(R.string.update_current, BuildConfig.VERSION_NAME),
                         color = TextDim, fontSize = 12.sp
                     )
                 }
@@ -703,12 +778,12 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
 
             if (state.updateAvailable) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Latest:", color = TextGray, fontSize = 13.sp)
+                    Text(stringResource(R.string.update_latest), color = TextGray, fontSize = 13.sp)
                     Text("v${info.version}", color = Green, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(10.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Released:", color = TextGray, fontSize = 13.sp)
+                    Text(stringResource(R.string.update_released), color = TextGray, fontSize = 13.sp)
                     Text(
                         info.publishedAt.split("T").firstOrNull() ?: "",
                         color = TextWhite, fontSize = 13.sp
@@ -717,9 +792,9 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
                 if (info.apkSize > 0) {
                     Spacer(Modifier.height(10.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Size:", color = TextGray, fontSize = 13.sp)
+                        Text(stringResource(R.string.update_size), color = TextGray, fontSize = 13.sp)
                         Text(
-                            "%.1f MB".format(info.apkSize / 1048576.0),
+                            stringResource(R.string.size_mb, info.apkSize / 1048576.0),
                             color = TextWhite, fontSize = 13.sp
                         )
                     }
@@ -730,7 +805,7 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
             DividerLine()
             Spacer(Modifier.height(20.dp))
 
-            Text("Changelog", color = Cyan, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.changelog), color = Cyan, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(10.dp))
             if (info.changelog.isNotEmpty()) {
                 Text(
@@ -740,7 +815,7 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
                     lineHeight = 19.sp
                 )
             } else {
-                BodyText("No changelog provided.", TextDim)
+                BodyText(stringResource(R.string.no_changelog), TextDim)
             }
 
             if (state.updateAvailable) {
@@ -749,20 +824,20 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
                     state.isDownloadingUpdate -> {
                         ProgressDisplay(
                             state.updateDownloadProgress,
-                            "Downloading... (${(state.updateDownloadProgress * 100).toInt()}%)"
+                            stringResource(R.string.downloading_pct, (state.updateDownloadProgress * 100).toInt())
                         )
                     }
                     state.isUpdateDownloaded -> {
-                        GlowButton("Install Update", Green) {
+                        GlowButton(stringResource(R.string.btn_install_update), Green) {
                             viewModel.installUpdate()
                         }
                         Spacer(Modifier.height(12.dp))
-                        GlowButton("Download Again", Cyan, filled = false) {
+                        GlowButton(stringResource(R.string.btn_download_again), Cyan, filled = false) {
                             viewModel.reDownloadUpdate()
                         }
                     }
                     else -> {
-                        GlowButton("Download", Green) {
+                        GlowButton(stringResource(R.string.btn_download), Green) {
                             viewModel.downloadUpdate()
                         }
                     }
@@ -776,7 +851,7 @@ private fun UpdatePage(state: AppState, viewModel: FccViewModel) {
             Spacer(Modifier.height(20.dp))
             DividerLine()
             Spacer(Modifier.height(16.dp))
-            GlowButton("Check Again", Cyan, filled = false) {
+            GlowButton(stringResource(R.string.btn_check_again), Cyan, filled = false) {
                 viewModel.checkForUpdates(force = true)
             }
         }
@@ -800,7 +875,7 @@ private fun SupportPage() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(56.dp))
-        PageTitle("Support FreeFCC", Icons.Outlined.FavoriteBorder)
+        PageTitle(stringResource(R.string.support_title), Icons.Outlined.FavoriteBorder)
         Spacer(Modifier.height(36.dp))
 
         // Pulsing heart with glow
@@ -837,7 +912,7 @@ private fun SupportPage() {
 
         Spacer(Modifier.height(28.dp))
         Text(
-            "FreeFCC is free and open source.",
+            stringResource(R.string.support_free),
             color = TextWhite,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
@@ -845,7 +920,7 @@ private fun SupportPage() {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "If it helped you out, consider buying me a coffee.\nIt helps cover server costs and keeps the project going.",
+            stringResource(R.string.support_coffee),
             color = TextGray,
             fontSize = 13.sp,
             lineHeight = 20.sp,
@@ -873,7 +948,7 @@ private fun SupportPage() {
         ) {
             Icon(Icons.Filled.Coffee, null, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(10.dp))
-            Text("Buy me a coffee", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(stringResource(R.string.btn_coffee), fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
 
         Spacer(Modifier.height(14.dp))
@@ -882,7 +957,7 @@ private fun SupportPage() {
         Button(
             onClick = {
                 try {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/doesthings/FreeFCC")))
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/${UpdateChecker.REPO}")))
                 } catch (_: Exception) {
                     // No browser installed (RC2 has no web browser)
                 }
@@ -899,35 +974,32 @@ private fun SupportPage() {
         ) {
             Icon(Icons.Filled.Code, null, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(10.dp))
-            Text("Source on GitHub", fontWeight = FontWeight.Medium, fontSize = 14.sp)
+            Text(stringResource(R.string.btn_source), fontWeight = FontWeight.Medium, fontSize = 14.sp)
         }
 
         Spacer(Modifier.height(40.dp))
 
         // About card
         GlowCard {
-            Text("About", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.about_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
-            BodyText(
-                "FreeFCC sends DUML commands to your DJI controller to unlock FCC mode and enable 4G. " +
-                "It works fully offline with no server or license. " +
-                "The protocol is publicly documented in the dji-firmware-tools project.",
-                TextGray
-            )
+            BodyText(stringResource(R.string.about_body), TextGray)
             Spacer(Modifier.height(16.dp))
             DividerLine()
             Spacer(Modifier.height(16.dp))
-            InfoRow("Version", FccViewModel.APP_VERSION)
+            InfoRow(stringResource(R.string.about_version), BuildConfig.VERSION_NAME)
             Spacer(Modifier.height(12.dp))
-            InfoRow("License", "AGPL-3.0")
+            InfoRow(stringResource(R.string.about_license), "AGPL-3.0")
             Spacer(Modifier.height(12.dp))
-            InfoRow("Protocol", "DUML")
+            InfoRow(stringResource(R.string.about_protocol), "DUML")
             Spacer(Modifier.height(12.dp))
-            InfoRow("Source", "github.com/doesthings/FreeFCC")
+            InfoRow(stringResource(R.string.about_source), "github.com/${UpdateChecker.REPO}")
+            Spacer(Modifier.height(12.dp))
+            InfoRow(stringResource(R.string.about_original), "github.com/doesthings/FreeFCC")
             Spacer(Modifier.height(16.dp))
             DividerLine()
             Spacer(Modifier.height(16.dp))
-            BodyText("Not affiliated with DJI. Use at your own risk.", TextDim)
+            BodyText(stringResource(R.string.about_disclaimer), TextDim)
         }
     }
 }
@@ -970,7 +1042,7 @@ private fun AppHeader(model: String) {
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            if (model.isNotEmpty()) "v${FccViewModel.APP_VERSION} · $model" else "v${FccViewModel.APP_VERSION}",
+            if (model.isNotEmpty()) "v${BuildConfig.VERSION_NAME} · $model" else "v${BuildConfig.VERSION_NAME}",
             color = TextDim,
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium
@@ -990,10 +1062,10 @@ private fun PageTitle(title: String, icon: androidx.compose.ui.graphics.vector.I
 @Composable
 private fun ConnectionPill(state: AppState) {
     val (label, color) = when {
-        state.status == "connecting" -> "Connecting..." to Amber
-        state.isConnected -> "Connected" to Green
-        state.status == "error" -> "Error" to Red
-        else -> "Disconnected" to TextGray
+        state.status == "connecting" -> stringResource(R.string.conn_connecting) to Amber
+        state.isConnected -> stringResource(R.string.status_connected) to Green
+        state.status == "error" -> stringResource(R.string.conn_error) to Red
+        else -> stringResource(R.string.status_disconnected) to TextGray
     }
 
     // Bounce-in on state change (no scale overflow — use alpha + small bump)
@@ -1071,7 +1143,7 @@ private fun ModeBadge(state: AppState) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                "MODE",
+                stringResource(R.string.mode_label),
                 color = TextDim,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Black,
@@ -1086,7 +1158,7 @@ private fun ModeBadge(state: AppState) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                if (active) "High-power region active" else "Default region",
+                if (active) stringResource(R.string.mode_fcc_desc) else stringResource(R.string.mode_ce_desc),
                 color = if (active) Green.copy(0.7f) else TextGray,
                 fontSize = 12.sp
             )
@@ -1159,11 +1231,11 @@ private fun SerialRow(serial: String, enabled: Boolean = true, onRefresh: () -> 
         ) {
             Icon(Icons.Filled.Flight, null, tint = Cyan.copy(0.6f), modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(10.dp))
-            Text("S/N: ", color = TextGray, fontSize = 12.sp)
+            Text(stringResource(R.string.serial_prefix), color = TextGray, fontSize = 12.sp)
             Text(serial, color = TextWhite, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             IconButton(onClick = onRefresh, enabled = enabled, modifier = Modifier.size(24.dp)) {
-                Icon(Icons.Default.Refresh, "Refresh", tint = TextGray, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Refresh, stringResource(R.string.cd_refresh), tint = TextGray, modifier = Modifier.size(16.dp))
             }
         }
     }
@@ -1297,11 +1369,11 @@ private fun BottomNavBar(
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
-        Triple("FCC", Icons.Filled.Wifi, Cyan),
-        Triple("Info", Icons.Filled.Info, Green),
-        Triple("Log", Icons.Filled.History, Amber),
-        Triple("Update", Icons.Filled.SystemUpdate, Color(0xFFB39DDB)),
-        Triple("Support", Icons.Filled.Favorite, Red)
+        Triple(stringResource(R.string.tab_fcc), Icons.Filled.Wifi, Cyan),
+        Triple(stringResource(R.string.tab_info), Icons.Filled.Info, Green),
+        Triple(stringResource(R.string.tab_log), Icons.Filled.History, Amber),
+        Triple(stringResource(R.string.tab_update), Icons.Filled.SystemUpdate, Color(0xFFB39DDB)),
+        Triple(stringResource(R.string.tab_support), Icons.Filled.Favorite, Red)
     )
 
     Surface(

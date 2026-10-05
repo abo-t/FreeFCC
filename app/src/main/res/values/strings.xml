@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default (English) UI strings. Every key here must exist in values-pl/strings.xml
+  with the same format arguments - StringsParityTest enforces it.
+-->
+<resources>
+    <!-- Tabs -->
+    <string name="tab_fcc">FCC</string>
+    <string name="tab_info">Info</string>
+    <string name="tab_log">Log</string>
+    <string name="tab_update">Update</string>
+    <string name="tab_support">Support</string>
+
+    <!-- Header, connection pill, mode badge -->
+    <string name="conn_connecting">Connecting...</string>
+    <string name="conn_error">Error</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="mode_label">MODE</string>
+    <string name="mode_fcc_desc">High-power region active</string>
+    <string name="mode_ce_desc">Default region</string>
+    <string name="serial_prefix">"S/N: "</string>
+    <string name="cd_refresh">Refresh</string>
+
+    <!-- FCC page -->
+    <string name="update_banner_title">Update available - v%1$s</string>
+    <string name="update_banner_hint">Tap Update to install</string>
+    <string name="cd_update_available">Update available</string>
+    <string name="fcc_connect_hint">Connect your drone to the controller, then power it on.</string>
+    <string name="btn_connect">Connect</string>
+    <string name="fcc_active">FCC mode is active.</string>
+    <string name="btn_stop_fcc">Stop FCC Mode</string>
+    <string name="btn_reapply_fcc">Re-Apply FCC</string>
+    <string name="btn_launch_fly">Launch DJI Fly</string>
+    <string name="keepalive_title">Keepalive</string>
+    <string name="keepalive_running">Re-applying FCC every 2s to prevent CE reset</string>
+    <string name="keepalive_idle">Keep FCC active while DJI Fly runs</string>
+    <string name="fcc_enable_hint">Tap the button below to enable FCC mode.</string>
+    <string name="btn_enable_fcc">Enable FCC Mode</string>
+    <string name="fourg_title">4G Mode</string>
+    <string name="fourg_desc">Sends 4G activation frames to the aircraft. No status is read back - check the DJI Fly app or Cellular Dongle to confirm.</string>
+    <string name="serial_label">Aircraft serial</string>
+    <string name="serial_placeholder">auto-detected, or type it</string>
+    <string name="btn_reading_serial">Reading serial…</string>
+    <string name="btn_read_serial">Read serial from aircraft</string>
+    <string name="btn_use_serial">Use this serial for 4G</string>
+    <string name="fourg_sending">Sending 4G activation frames...</string>
+    <string name="btn_send_4g">Send 4G Activation Frames</string>
+    <string name="led_title">External LED</string>
+    <string name="led_desc">Turn aircraft arm LEDs on or off. Requires DJI Fly running with aircraft connected.</string>
+    <string name="led_status_fmt">Status: %1$s</string>
+    <string name="btn_led_on">LED ON</string>
+    <string name="btn_led_off">LED OFF</string>
+    <string name="autofcc_title">Auto-FCC</string>
+    <string name="autofcc_desc">Auto-connect, apply FCC, start keepalive, and launch DJI Fly.</string>
+
+    <!-- Info page -->
+    <string name="info_title">Device Info</string>
+    <string name="info_connection">Connection</string>
+    <string name="info_controller">Controller</string>
+    <string name="unknown">Unknown</string>
+    <string name="info_status">Status</string>
+    <string name="info_aircraft_sn">Aircraft S/N</string>
+    <string name="not_detected">Not detected</string>
+    <string name="info_version">Version Info</string>
+    <string name="cd_query">Query</string>
+    <string name="info_connect_first">Connect to the controller first.</string>
+    <string name="info_tap_refresh">Tap the refresh button to query version info.</string>
+    <string name="lang_title">Language</string>
+    <string name="lang_system">System</string>
+    <string name="lang_en">English</string>
+    <string name="lang_pl">Polski</string>
+
+    <!-- Log page -->
+    <string name="log_title">Activity Log</string>
+    <string name="log_empty">No activity yet.</string>
+    <string name="btn_save_log">Save log to file</string>
+
+    <!-- Update page -->
+    <string name="updates_title">Updates</string>
+    <string name="update_checking">Checking GitHub for latest release...</string>
+    <string name="update_no_release">No release published yet.</string>
+    <string name="update_no_release_hint">%1$s has no release on GitHub yet. You are running v%2$s.</string>
+    <string name="update_check_failed">Could not check for updates.</string>
+    <string name="update_check_failed_hint">Make sure you\'re connected to Wi-Fi and try again.</string>
+    <string name="btn_retry">Retry</string>
+    <string name="update_available_title">Update Available</string>
+    <string name="up_to_date">Up to Date</string>
+    <string name="update_current">Current: v%1$s</string>
+    <string name="update_latest">Latest:</string>
+    <string name="update_released">Released:</string>
+    <string name="update_size">Size:</string>
+    <string name="size_mb">%1$.1f MB</string>
+    <string name="changelog">Changelog</string>
+    <string name="no_changelog">No changelog provided.</string>
+    <string name="downloading_pct">Downloading... (%1$d%%)</string>
+    <string name="btn_install_update">Install Update</string>
+    <string name="btn_download_again">Download Again</string>
+    <string name="btn_download">Download</string>
+    <string name="btn_check_again">Check Again</string>
+
+    <!-- Support page -->
+    <string name="support_title">Support FreeFCC</string>
+    <string name="support_free">FreeFCC is free and open source.</string>
+    <string name="support_coffee">If it helped you out, consider buying the original author a coffee.\nIt helps cover server costs and keeps the project going.</string>
+    <string name="btn_coffee">Buy me a coffee</string>
+    <string name="btn_source">Source on GitHub</string>
+    <string name="about_title">About</string>
+    <string name="about_body">FreeFCC sends DUML commands to your DJI controller to unlock FCC mode and enable 4G. It works fully offline with no server or license. The protocol is publicly documented in the dji-firmware-tools project.</string>
+    <string name="about_version">Version</string>
+    <string name="about_license">License</string>
+    <string name="about_protocol">Protocol</string>
+    <string name="about_source">Source</string>
+    <string name="about_original">Original</string>
+    <string name="about_disclaimer">Not affiliated with DJI. Use at your own risk.</string>
+
+    <!-- Keepalive notification -->
+    <string name="notif_channel_name">FCC Keepalive</string>
+    <string name="notif_channel_desc">Keeps FCC mode active in the background</string>
+    <string name="notif_text">Maintaining FCC mode...</string>
+
+    <!-- Status messages (shown in cards) -->
+    <string name="msg_auto_connecting">Auto-connecting...</string>
+    <string name="msg_auto_not_found">Controller not found. Auto-FCC will retry when you tap Connect.</string>
+    <string name="msg_auto_connected_applying">Connected. Auto-applying FCC...</string>
+    <string name="msg_applying_fcc">Applying FCC mode...</string>
+    <string name="msg_auto_fcc_enabled_keepalive">FCC enabled. Starting keepalive...</string>
+    <string name="msg_launching_fly">FCC active. Launching DJI Fly...</string>
+    <string name="msg_auto_failed">Auto-FCC failed - try manually</string>
+    <string name="auto_error">Auto-FCC error: %1$s</string>
+    <string name="msg_connecting">Connecting to controller...</string>
+    <string name="msg_connected_serial">Connected - %1$s</string>
+    <string name="msg_connected_ready">Connected. Ready to apply FCC.</string>
+    <string name="msg_controller_not_found">Controller not found. Make sure the drone is powered on and linked.</string>
+    <string name="msg_enabling_fcc">Enabling FCC mode...</string>
+    <string name="msg_fcc_enabled">FCC mode enabled</string>
+    <string name="msg_fcc_failed">FCC apply failed - RC link unreachable. Make sure the drone is on and linked.</string>
+    <string name="fcc_error">FCC apply error: %1$s</string>
+    <string name="msg_restoring_ce">Restoring CE mode...</string>
+    <string name="msg_ce_restored">CE mode restored</string>
+    <string name="msg_ce_failed">CE restore failed - RC link unreachable</string>
+    <string name="ce_error">CE restore error: %1$s</string>
+    <string name="msg_4g_no_serial">4G needs the aircraft connected. Power on the drone, link it, and tap Connect first.</string>
+    <string name="msg_4g_no_dongle">4G dongle not detected. Connect a DJI Cellular Dongle 2 to the aircraft (Mini 4 Pro also needs its 4G mounting kit) and try again.</string>
+    <string name="msg_4g_done">All activation frames written successfully - check 4G status on the aircraft.</string>
+    <string name="msg_4g_failed">4G apply failed - is the 4G dongle connected?</string>
+    <string name="msg_4g_error">4G error: %1$s</string>
+    <string name="led_turning_on">Turning LEDs on...</string>
+    <string name="led_turning_off">Turning LEDs off...</string>
+    <string name="led_status_on">ON</string>
+    <string name="led_status_off">OFF</string>
+    <string name="led_status_failed">Failed - is DJI Fly running?</string>
+    <string name="error_fmt">Error: %1$s</string>
+    <string name="info_profile_empty">device_info.json is empty</string>
+    <string name="info_no_response">No response from controller</string>
+    <string name="info_hardware">Hardware: %1$s</string>
+    <string name="info_bootloader">Bootloader: %1$s</string>
+    <string name="info_firmware">Firmware: %1$s</string>
+    <string name="info_raw_payload">Raw payload (%1$d bytes):</string>
+    <string name="model_unknown">unknown</string>
+    <string name="msg_preparing_install">Preparing install...</string>
+    <string name="msg_grant_install">Grant install permission in Settings, then tap Install again. Or install via SD card.</string>
+    <string name="msg_no_installer_sideload">No installer. Sideload 01_PackageInstaller from SD card, reboot, retry.</string>
+    <string name="msg_installer_launched">Installer launched - follow the on-screen prompts.</string>
+    <string name="msg_no_installer_sd">No installer. Install via SD card + FileManager.</string>
+    <string name="install_failed">Install failed: %1$s</string>
+    <string name="install_error">Install error: %1$s</string>
+
+    <!-- Activity log lines -->
+    <string name="log_auto_fcc_starting">Auto-FCC enabled - connecting and applying...</string>
+    <string name="log_auto_fcc_on">Auto-FCC enabled - will auto-connect on next launch</string>
+    <string name="log_auto_fcc_off">Auto-FCC disabled</string>
+    <string name="log_auto_skipped_busy">Auto-FCC skipped - another hardware operation is already running</string>
+    <string name="log_auto_not_found">Auto-FCC: controller not found - is the drone powered on?</string>
+    <string name="log_auto_connected">Auto-FCC: controller connected</string>
+    <string name="log_port_detected">DUML port detected: %1$d</string>
+    <string name="log_aircraft_serial">Aircraft serial: %1$s</string>
+    <string name="log_auto_applying">Auto-FCC: applying FCC mode...</string>
+    <string name="log_auto_fcc_enabled">Auto-FCC: FCC mode enabled</string>
+    <string name="log_auto_keepalive_started">Auto-FCC: keepalive started (re-applying every 2s)</string>
+    <string name="log_auto_launching_fly">Auto-FCC: launching DJI Fly</string>
+    <string name="log_auto_failed">Auto-FCC: apply failed - try manually</string>
+    <string name="log_hw_busy">Hardware busy - please wait for the current operation to finish.</string>
+    <string name="log_controller_connected">Controller connected</string>
+    <string name="log_connect_failed">Connection failed - is the drone powered on?</string>
+    <string name="log_fcc_profile_loaded">Loaded FCC profile: %1$d frames, %2$d rounds</string>
+    <string name="log_fcc_enabled">FCC mode enabled - %1$d frames sent</string>
+    <string name="log_fcc_failed">FCC apply failed - writes failed</string>
+    <string name="log_keepalive_already">Keepalive already running</string>
+    <string name="log_keepalive_started">Started FCC keepalive - re-applying every 2s to prevent CE reset</string>
+    <string name="log_keepalive_stopped">FCC keepalive stopped</string>
+    <string name="log_launched_fly">Launched DJI Fly</string>
+    <string name="log_launched_go4">Launched DJI Go 4</string>
+    <string name="log_fly_missing">DJI Fly not installed or cannot launch on this controller</string>
+    <string name="log_4g_sending">Sending 4G activation frames...</string>
+    <string name="log_4g_no_serial">4G activation failed - no aircraft serial detected; power on the drone and tap Connect first</string>
+    <string name="log_4g_model_note">Note: model \'%1$s\' isn\'t in the known-4G list, but a dongle check follows - trying anyway. If 4G doesn\'t activate, this aircraft may not accept the Cellular Dongle 2.</string>
+    <string name="log_4g_no_dongle">4G activation aborted - 4G socket /duss/mb/0x205 not connectable (no dongle?)</string>
+    <string name="log_4g_profile_loaded">Loaded 4G profile: %1$d frames (serial: %2$s, model: %3$s)</string>
+    <string name="log_4g_done">4G activation: all %1$d frames written successfully via Unix socket</string>
+    <string name="log_4g_failed">4G activation failed - at least one frame write failed on the Unix socket</string>
+    <string name="log_4g_error">4G activation error: %1$s</string>
+    <string name="log_led_busy">LED busy - please wait.</string>
+    <string name="log_led_profile_loaded">Loaded LED profile: %1$d frames (port %2$d)</string>
+    <string name="log_led_on">LEDs turned on</string>
+    <string name="log_led_off">LEDs turned off</string>
+    <string name="log_led_failed">LED command failed - make sure DJI Fly is running with aircraft connected</string>
+    <string name="log_led_error">LED error: %1$s</string>
+    <string name="log_querying_info">Querying device info...</string>
+    <string name="log_info_profile_empty">Device info: profile has no frames</string>
+    <string name="log_info_no_response">Device info: no response</string>
+    <string name="log_info_received">Device info received: %1$d bytes</string>
+    <string name="log_info_error">Device info error: %1$s</string>
+    <string name="log_reading_serial">Reading aircraft serial...</string>
+    <string name="log_serial_listen">No reply to the serial query - listening for telemetry (up to 8s)...</string>
+    <string name="log_serial_cached">Aircraft serial: %1$s (cached)</string>
+    <string name="log_serial_none">No serial detected - power on and link the aircraft with the live view up, or enter it manually.</string>
+    <string name="log_manual_cleared">Manual serial cleared - auto-detection will be used</string>
+    <string name="log_manual_set">Manual serial set: %1$s</string>
+    <string name="log_manual_set_unusual">Manual serial set: %1$s (note: unusual format)</string>
+    <string name="log_export_saved">Log saved: %1$s</string>
+    <string name="log_export_failed">Could not save log: %1$s</string>
+    <string name="log_checking_updates">Checking for updates...</string>
+    <string name="log_update_failed">Update check failed - no internet or GitHub unreachable. Tap Retry to try again.</string>
+    <string name="log_update_no_release">No release published yet in %1$s</string>
+    <string name="log_update_available">Update available: v%1$s</string>
+    <string name="log_up_to_date">App is up to date (v%1$s)</string>
+    <string name="log_install_perm_needed">Install permission needed - opening Settings. Grant \'Install unknown apps\' for FreeFCC, then tap Download again.</string>
+    <string name="log_settings_unavailable_download">Settings page not available - you may need to install updates via SD card + FileManager.</string>
+    <string name="log_downloading">Downloading update v%1$s...</string>
+    <string name="log_download_failed">Update download failed - check your Wi-Fi connection. The RC2 needs Wi-Fi to download updates.</string>
+    <string name="log_downloaded">Update downloaded - tap Install to apply</string>
+    <string name="log_no_apk">No downloaded APK found - download first</string>
+    <string name="log_apk_missing">Downloaded APK file missing - download again</string>
+    <string name="log_install_blocked">Install blocked - FreeFCC needs \'Install unknown apps\' permission.</string>
+    <string name="log_install_open_settings">Opening Settings to grant it. If the Settings page doesn\'t appear, install the update via SD card + FileManager instead.</string>
+    <string name="log_settings_unavailable_install">Settings page unavailable - install via SD card + FileManager.</string>
+    <string name="log_copy_apk_failed">Could not copy APK to external storage: %1$s</string>
+    <string name="log_no_installer_sideload">No package installer found. Sideload 01_PackageInstaller from the SD card, reboot, then retry.</string>
+    <string name="log_launching_installer">Launching installer...</string>
+    <string name="log_no_installer_sd">No package installer on this device. Install via SD card + FileManager.</string>
+    <string name="log_connect_first">Connect to the controller first</string>
+</resources>

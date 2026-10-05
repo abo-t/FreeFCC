@@ -169,12 +169,13 @@ class FccKeepaliveService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val res = Lang.wrap(this)
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "FCC Keepalive",
+                res.getString(R.string.notif_channel_name),
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Keeps FCC mode active in the background"
+                description = res.getString(R.string.notif_channel_desc)
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
@@ -197,7 +198,7 @@ class FccKeepaliveService : Service() {
         )
         return builder
             .setContentTitle("FreeFCC")
-            .setContentText("Maintaining FCC mode...")
+            .setContentText(Lang.wrap(this).getString(R.string.notif_text))
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setOngoing(true)
             .setContentIntent(pendingIntent)

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Polish UI strings. Same keys and format arguments as values/strings.xml
+  (StringsParityTest).
+-->
+<resources>
+    <!-- Tabs -->
+    <string name="tab_fcc">FCC</string>
+    <string name="tab_info">Info</string>
+    <string name="tab_log">Log</string>
+    <string name="tab_update">Aktualizacja</string>
+    <string name="tab_support">Wsparcie</string>
+
+    <!-- Header, connection pill, mode badge -->
+    <string name="conn_connecting">Łączenie...</string>
+    <string name="conn_error">Błąd</string>
+    <string name="status_connected">Połączono</string>
+    <string name="status_disconnected">Rozłączono</string>
+    <string name="mode_label">TRYB</string>
+    <string name="mode_fcc_desc">Aktywny region wysokiej mocy</string>
+    <string name="mode_ce_desc">Region domyślny</string>
+    <string name="serial_prefix">"S/N: "</string>
+    <string name="cd_refresh">Odśwież</string>
+
+    <!-- FCC page -->
+    <string name="update_banner_title">Dostępna aktualizacja - v%1$s</string>
+    <string name="update_banner_hint">Dotknij Aktualizacja, żeby zainstalować</string>
+    <string name="cd_update_available">Dostępna aktualizacja</string>
+    <string name="fcc_connect_hint">Połącz drona z pilotem, a potem go włącz.</string>
+    <string name="btn_connect">Połącz</string>
+    <string name="fcc_active">Tryb FCC jest aktywny.</string>
+    <string name="btn_stop_fcc">Wyłącz tryb FCC</string>
+    <string name="btn_reapply_fcc">Wyślij FCC ponownie</string>
+    <string name="btn_launch_fly">Uruchom DJI Fly</string>
+    <string name="keepalive_title">Podtrzymanie FCC</string>
+    <string name="keepalive_running">Ponawia FCC co 2 s, żeby radio nie wróciło do CE</string>
+    <string name="keepalive_idle">Utrzymuje FCC, gdy działa DJI Fly</string>
+    <string name="fcc_enable_hint">Dotknij przycisku poniżej, żeby włączyć tryb FCC.</string>
+    <string name="btn_enable_fcc">Włącz tryb FCC</string>
+    <string name="fourg_title">Tryb 4G</string>
+    <string name="fourg_desc">Wysyła do drona ramki aktywacji 4G. Aplikacja nie odczytuje stanu - potwierdź w DJI Fly albo na modemie Cellular Dongle.</string>
+    <string name="serial_label">Numer seryjny drona</string>
+    <string name="serial_placeholder">wykryty automatycznie albo wpisz</string>
+    <string name="btn_reading_serial">Odczyt numeru…</string>
+    <string name="btn_read_serial">Odczytaj numer z drona</string>
+    <string name="btn_use_serial">Użyj tego numeru dla 4G</string>
+    <string name="fourg_sending">Wysyłanie ramek aktywacji 4G...</string>
+    <string name="btn_send_4g">Wyślij ramki aktywacji 4G</string>
+    <string name="led_title">Zewnętrzne LED</string>
+    <string name="led_desc">Włącza i wyłącza światła na ramionach drona. Wymaga uruchomionego DJI Fly z połączonym dronem.</string>
+    <string name="led_status_fmt">Stan: %1$s</string>
+    <string name="btn_led_on">LED WŁ.</string>
+    <string name="btn_led_off">LED WYŁ.</string>
+    <string name="autofcc_title">Auto-FCC</string>
+    <string name="autofcc_desc">Sam łączy, włącza FCC, uruchamia podtrzymanie i otwiera DJI Fly.</string>
+
+    <!-- Info page -->
+    <string name="info_title">Informacje o urządzeniu</string>
+    <string name="info_connection">Połączenie</string>
+    <string name="info_controller">Pilot</string>
+    <string name="unknown">Nieznany</string>
+    <string name="info_status">Stan</string>
+    <string name="info_aircraft_sn">S/N drona</string>
+    <string name="not_detected">Nie wykryto</string>
+    <string name="info_version">Wersje</string>
+    <string name="cd_query">Odczytaj</string>
+    <string name="info_connect_first">Najpierw połącz się z pilotem.</string>
+    <string name="info_tap_refresh">Dotknij przycisku odświeżania, żeby odczytać wersje.</string>
+    <string name="lang_title">Język</string>
+    <string name="lang_system">Systemowy</string>
+    <string name="lang_en">English</string>
+    <string name="lang_pl">Polski</string>
+
+    <!-- Log page -->
+    <string name="log_title">Dziennik</string>
+    <string name="log_empty">Brak wpisów.</string>
+    <string name="btn_save_log">Zapisz log do pliku</string>
+
+    <!-- Update page -->
+    <string name="updates_title">Aktualizacje</string>
+    <string name="update_checking">Sprawdzanie najnowszego wydania na GitHubie...</string>
+    <string name="update_no_release">Brak opublikowanych wydań.</string>
+    <string name="update_no_release_hint">%1$s nie ma jeszcze wydania na GitHubie. Masz wersję v%2$s.</string>
+    <string name="update_check_failed">Nie udało się sprawdzić aktualizacji.</string>
+    <string name="update_check_failed_hint">Sprawdź połączenie z Wi-Fi i spróbuj ponownie.</string>
+    <string name="btn_retry">Ponów</string>
+    <string name="update_available_title">Dostępna aktualizacja</string>
+    <string name="up_to_date">Aktualna wersja</string>
+    <string name="update_current">Obecna: v%1$s</string>
+    <string name="update_latest">Najnowsza:</string>
+    <string name="update_released">Wydana:</string>
+    <string name="update_size">Rozmiar:</string>
+    <string name="size_mb">%1$.1f MB</string>
+    <string name="changelog">Lista zmian</string>
+    <string name="no_changelog">Brak listy zmian.</string>
+    <string name="downloading_pct">Pobieranie... (%1$d%%)</string>
+    <string name="btn_install_update">Zainstaluj aktualizację</string>
+    <string name="btn_download_again">Pobierz ponownie</string>
+    <string name="btn_download">Pobierz</string>
+    <string name="btn_check_again">Sprawdź ponownie</string>
+
+    <!-- Support page -->
+    <string name="support_title">Wesprzyj FreeFCC</string>
+    <string name="support_free">FreeFCC jest darmowy i otwartoźródłowy.</string>
+    <string name="support_coffee">Jeśli pomógł, możesz postawić kawę autorowi oryginału.\nTo pokrywa koszty serwera i pozwala rozwijać projekt.</string>
+    <string name="btn_coffee">Postaw kawę</string>
+    <string name="btn_source">Kod źródłowy na GitHubie</string>
+    <string name="about_title">O aplikacji</string>
+    <string name="about_body">FreeFCC wysyła komendy DUML do pilota DJI, żeby włączyć tryb FCC i aktywować 4G. Działa całkowicie offline, bez serwera i licencji. Protokół jest publicznie opisany w projekcie dji-firmware-tools.</string>
+    <string name="about_version">Wersja</string>
+    <string name="about_license">Licencja</string>
+    <string name="about_protocol">Protokół</string>
+    <string name="about_source">Źródło</string>
+    <string name="about_original">Oryginał</string>
+    <string name="about_disclaimer">Niezwiązane z DJI. Używasz na własne ryzyko.</string>
+
+    <!-- Keepalive notification -->
+    <string name="notif_channel_name">Podtrzymanie FCC</string>
+    <string name="notif_channel_desc">Utrzymuje tryb FCC w tle</string>
+    <string name="notif_text">Utrzymuję tryb FCC...</string>
+
+    <!-- Status messages (shown in cards) -->
+    <string name="msg_auto_connecting">Automatyczne łączenie...</string>
+    <string name="msg_auto_not_found">Nie znaleziono pilota. Auto-FCC spróbuje ponownie po dotknięciu Połącz.</string>
+    <string name="msg_auto_connected_applying">Połączono. Automatyczne włączanie FCC...</string>
+    <string name="msg_applying_fcc">Włączanie trybu FCC...</string>
+    <string name="msg_auto_fcc_enabled_keepalive">FCC włączone. Uruchamiam podtrzymanie...</string>
+    <string name="msg_launching_fly">FCC aktywne. Uruchamiam DJI Fly...</string>
+    <string name="msg_auto_failed">Auto-FCC nie powiodło się - spróbuj ręcznie</string>
+    <string name="auto_error">Błąd Auto-FCC: %1$s</string>
+    <string name="msg_connecting">Łączenie z pilotem...</string>
+    <string name="msg_connected_serial">Połączono - %1$s</string>
+    <string name="msg_connected_ready">Połączono. Można włączyć FCC.</string>
+    <string name="msg_controller_not_found">Nie znaleziono pilota. Upewnij się, że dron jest włączony i połączony.</string>
+    <string name="msg_enabling_fcc">Włączanie trybu FCC...</string>
+    <string name="msg_fcc_enabled">Tryb FCC włączony</string>
+    <string name="msg_fcc_failed">Nie udało się włączyć FCC - brak łącza z pilotem. Upewnij się, że dron jest włączony i połączony.</string>
+    <string name="fcc_error">Błąd włączania FCC: %1$s</string>
+    <string name="msg_restoring_ce">Przywracanie trybu CE...</string>
+    <string name="msg_ce_restored">Przywrócono tryb CE</string>
+    <string name="msg_ce_failed">Nie udało się przywrócić CE - brak łącza z pilotem</string>
+    <string name="ce_error">Błąd przywracania CE: %1$s</string>
+    <string name="msg_4g_no_serial">4G wymaga połączonego drona. Włącz drona, połącz go i najpierw dotknij Połącz.</string>
+    <string name="msg_4g_no_dongle">Nie wykryto modemu 4G. Podłącz do drona DJI Cellular Dongle 2 (Mini 4 Pro wymaga też zestawu montażowego 4G) i spróbuj ponownie.</string>
+    <string name="msg_4g_done">Wszystkie ramki aktywacji zapisane - sprawdź stan 4G na dronie.</string>
+    <string name="msg_4g_failed">Nie udało się wysłać 4G - czy modem 4G jest podłączony?</string>
+    <string name="msg_4g_error">Błąd 4G: %1$s</string>
+    <string name="led_turning_on">Włączanie LED...</string>
+    <string name="led_turning_off">Wyłączanie LED...</string>
+    <string name="led_status_on">WŁ.</string>
+    <string name="led_status_off">WYŁ.</string>
+    <string name="led_status_failed">Niepowodzenie - czy DJI Fly jest uruchomione?</string>
+    <string name="error_fmt">Błąd: %1$s</string>
+    <string name="info_profile_empty">device_info.json jest pusty</string>
+    <string name="info_no_response">Brak odpowiedzi pilota</string>
+    <string name="info_hardware">Sprzęt: %1$s</string>
+    <string name="info_bootloader">Bootloader: %1$s</string>
+    <string name="info_firmware">Firmware: %1$s</string>
+    <string name="info_raw_payload">Surowa odpowiedź (%1$d B):</string>
+    <string name="model_unknown">nieznany</string>
+    <string name="msg_preparing_install">Przygotowanie instalacji...</string>
+    <string name="msg_grant_install">Zezwól na instalację w Ustawieniach i dotknij Zainstaluj ponownie. Albo zainstaluj z karty SD.</string>
+    <string name="msg_no_installer_sideload">Brak instalatora. Zainstaluj 01_PackageInstaller z karty SD, uruchom ponownie pilota i ponów.</string>
+    <string name="msg_installer_launched">Uruchomiono instalator - postępuj według poleceń na ekranie.</string>
+    <string name="msg_no_installer_sd">Brak instalatora. Zainstaluj z karty SD przez FileManager.</string>
+    <string name="install_failed">Instalacja nie powiodła się: %1$s</string>
+    <string name="install_error">Błąd instalacji: %1$s</string>
+
+    <!-- Activity log lines -->
+    <string name="log_auto_fcc_starting">Auto-FCC włączone - łączę i włączam FCC...</string>
+    <string name="log_auto_fcc_on">Auto-FCC włączone - połączy się samo przy następnym uruchomieniu</string>
+    <string name="log_auto_fcc_off">Auto-FCC wyłączone</string>
+    <string name="log_auto_skipped_busy">Auto-FCC pominięte - trwa inna operacja na sprzęcie</string>
+    <string name="log_auto_not_found">Auto-FCC: nie znaleziono pilota - czy dron jest włączony?</string>
+    <string name="log_auto_connected">Auto-FCC: połączono z pilotem</string>
+    <string name="log_port_detected">Wykryto port DUML: %1$d</string>
+    <string name="log_aircraft_serial">Numer seryjny drona: %1$s</string>
+    <string name="log_auto_applying">Auto-FCC: włączanie trybu FCC...</string>
+    <string name="log_auto_fcc_enabled">Auto-FCC: tryb FCC włączony</string>
+    <string name="log_auto_keepalive_started">Auto-FCC: podtrzymanie uruchomione (ponawia co 2 s)</string>
+    <string name="log_auto_launching_fly">Auto-FCC: uruchamiam DJI Fly</string>
+    <string name="log_auto_failed">Auto-FCC: nie udało się - spróbuj ręcznie</string>
+    <string name="log_hw_busy">Sprzęt zajęty - poczekaj, aż skończy się bieżąca operacja.</string>
+    <string name="log_controller_connected">Połączono z pilotem</string>
+    <string name="log_connect_failed">Połączenie nieudane - czy dron jest włączony?</string>
+    <string name="log_fcc_profile_loaded">Wczytano profil FCC: liczba ramek %1$d, liczba rund %2$d</string>
+    <string name="log_fcc_enabled">Tryb FCC włączony - wysłane ramki: %1$d</string>
+    <string name="log_fcc_failed">Nie udało się włączyć FCC - zapis nieudany</string>
+    <string name="log_keepalive_already">Podtrzymanie już działa</string>
+    <string name="log_keepalive_started">Uruchomiono podtrzymanie FCC - ponawia co 2 s, żeby radio nie wróciło do CE</string>
+    <string name="log_keepalive_stopped">Zatrzymano podtrzymanie FCC</string>
+    <string name="log_launched_fly">Uruchomiono DJI Fly</string>
+    <string name="log_launched_go4">Uruchomiono DJI Go 4</string>
+    <string name="log_fly_missing">DJI Fly nie jest zainstalowane albo nie da się go uruchomić na tym pilocie</string>
+    <string name="log_4g_sending">Wysyłanie ramek aktywacji 4G...</string>
+    <string name="log_4g_no_serial">Aktywacja 4G nieudana - nie wykryto numeru seryjnego drona; włącz drona i najpierw dotknij Połącz</string>
+    <string name="log_4g_model_note">Uwaga: modelu \'%1$s\' nie ma na liście znanych modeli z 4G, ale dalej sprawdzam modem - próbuję mimo to. Jeśli 4G się nie włączy, ten dron może nie obsługiwać Cellular Dongle 2.</string>
+    <string name="log_4g_no_dongle">Przerwano aktywację 4G - gniazdo 4G /duss/mb/0x205 niedostępne (brak modemu?)</string>
+    <string name="log_4g_profile_loaded">Wczytano profil 4G: liczba ramek %1$d (numer: %2$s, model: %3$s)</string>
+    <string name="log_4g_done">Aktywacja 4G: zapisano wszystkie ramki przez gniazdo Unix (%1$d)</string>
+    <string name="log_4g_failed">Aktywacja 4G nieudana - co najmniej jedna ramka nie została zapisana do gniazda Unix</string>
+    <string name="log_4g_error">Błąd aktywacji 4G: %1$s</string>
+    <string name="log_led_busy">LED zajęte - poczekaj.</string>
+    <string name="log_led_profile_loaded">Wczytano profil LED: liczba ramek %1$d (port %2$d)</string>
+    <string name="log_led_on">LED włączone</string>
+    <string name="log_led_off">LED wyłączone</string>
+    <string name="log_led_failed">Komenda LED nieudana - upewnij się, że DJI Fly działa i dron jest połączony</string>
+    <string name="log_led_error">Błąd LED: %1$s</string>
+    <string name="log_querying_info">Odczyt informacji o urządzeniu...</string>
+    <string name="log_info_profile_empty">Informacje o urządzeniu: profil nie ma ramek</string>
+    <string name="log_info_no_response">Informacje o urządzeniu: brak odpowiedzi</string>
+    <string name="log_info_received">Odebrano informacje o urządzeniu: %1$d B</string>
+    <string name="log_info_error">Błąd odczytu informacji: %1$s</string>
+    <string name="log_reading_serial">Odczyt numeru seryjnego drona...</string>
+    <string name="log_serial_listen">Brak odpowiedzi na zapytanie o numer - nasłuchuję telemetrii (do 8 s)...</string>
+    <string name="log_serial_cached">Numer seryjny drona: %1$s (zapamiętany)</string>
+    <string name="log_serial_none">Nie wykryto numeru - włącz i połącz drona z widokiem z kamery albo wpisz numer ręcznie.</string>
+    <string name="log_manual_cleared">Usunięto ręczny numer - aplikacja będzie wykrywać go sama</string>
+    <string name="log_manual_set">Ustawiono ręczny numer: %1$s</string>
+    <string name="log_manual_set_unusual">Ustawiono ręczny numer: %1$s (uwaga: nietypowy format)</string>
+    <string name="log_export_saved">Zapisano log: %1$s</string>
+    <string name="log_export_failed">Nie udało się zapisać logu: %1$s</string>
+    <string name="log_checking_updates">Sprawdzanie aktualizacji...</string>
+    <string name="log_update_failed">Sprawdzanie aktualizacji nieudane - brak internetu albo GitHub niedostępny. Dotknij Ponów.</string>
+    <string name="log_update_no_release">Brak opublikowanych wydań w %1$s</string>
+    <string name="log_update_available">Dostępna aktualizacja: v%1$s</string>
+    <string name="log_up_to_date">Aplikacja jest aktualna (v%1$s)</string>
+    <string name="log_install_perm_needed">Potrzebna zgoda na instalację - otwieram Ustawienia. Zezwól FreeFCC na „Instalowanie nieznanych aplikacji” i dotknij Pobierz ponownie.</string>
+    <string name="log_settings_unavailable_download">Strona ustawień niedostępna - aktualizacje trzeba będzie instalować z karty SD przez FileManager.</string>
+    <string name="log_downloading">Pobieranie aktualizacji v%1$s...</string>
+    <string name="log_download_failed">Pobieranie aktualizacji nieudane - sprawdź Wi-Fi. RC2 potrzebuje Wi-Fi do pobrania aktualizacji.</string>
+    <string name="log_downloaded">Pobrano aktualizację - dotknij Zainstaluj</string>
+    <string name="log_no_apk">Brak pobranego APK - najpierw pobierz</string>
+    <string name="log_apk_missing">Brak pliku pobranego APK - pobierz ponownie</string>
+    <string name="log_install_blocked">Instalacja zablokowana - FreeFCC potrzebuje zgody na „Instalowanie nieznanych aplikacji”.</string>
+    <string name="log_install_open_settings">Otwieram Ustawienia, żeby jej udzielić. Jeśli strona ustawień się nie pojawi, zainstaluj aktualizację z karty SD przez FileManager.</string>
+    <string name="log_settings_unavailable_install">Strona ustawień niedostępna - zainstaluj z karty SD przez FileManager.</string>
+    <string name="log_copy_apk_failed">Nie udało się skopiować APK do pamięci zewnętrznej: %1$s</string>
+    <string name="log_no_installer_sideload">Nie znaleziono instalatora pakietów. Zainstaluj 01_PackageInstaller z karty SD, uruchom ponownie pilota i ponów.</string>
+    <string name="log_launching_installer">Uruchamiam instalator...</string>
+    <string name="log_no_installer_sd">Brak instalatora pakietów na tym urządzeniu. Zainstaluj z karty SD przez FileManager.</string>
+    <string name="log_connect_first">Najpierw połącz się z pilotem</string>
+</resources>

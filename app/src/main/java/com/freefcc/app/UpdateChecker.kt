@@ -13,7 +13,9 @@ import java.security.MessageDigest
  * Checks for app updates by querying the GitHub Releases API.
  *
  * GitHub API endpoint:
- *   GET https://api.github.com/repos/doesthings/FreeFCC/releases/latest
+ *   GET https://api.github.com/repos/<BuildConfig.UPDATE_REPO>/releases/latest
+ * The repo is set at build time (app/build.gradle.kts), so a fork follows its
+ * own releases instead of the upstream ones.
  *
  * Returns JSON with tag_name, name, body (changelog), and assets[] (download URLs).
  *
@@ -48,16 +50,24 @@ data class UpdateInfo(
     }
 }
 
+/** Outcome of a release check: found, repo has no release yet, or check failed. */
+sealed interface UpdateCheck {
+    data class Found(val info: UpdateInfo) : UpdateCheck
+    data object NoRelease : UpdateCheck
+    data object Failed : UpdateCheck
+}
+
 object UpdateChecker {
 
-    private const val REPO = "doesthings/FreeFCC"
-    private const val API_URL = "https://api.github.com/repos/$REPO/releases/latest"
+    val REPO: String = BuildConfig.UPDATE_REPO
+    private val API_URL = "https://api.github.com/repos/$REPO/releases/latest"
 
     /**
      * Fetches the latest release info from GitHub.
-     * Returns null on any error (network, parse, etc).
+     * HTTP 404 means the repo has no published release (a fresh fork);
+     * any other error (network, parse, missing APK asset) is [UpdateCheck.Failed].
      */
-    fun fetchLatest(): UpdateInfo? {
+    fun fetchLatest(): UpdateCheck {
         var conn: HttpURLConnection? = null
         return try {
             conn = (URL(API_URL).openConnection() as HttpURLConnection).apply {
@@ -68,7 +78,8 @@ object UpdateChecker {
                 setRequestProperty("User-Agent", "FreeFCC-App")
             }
 
-            if (conn.responseCode != 200) return null
+            if (conn.responseCode == 404) return UpdateCheck.NoRelease
+            if (conn.responseCode != 200) return UpdateCheck.Failed
 
             val body = conn.inputStream.bufferedReader().use { it.readText() }
             val json = JSONObject(body)
@@ -79,7 +90,7 @@ object UpdateChecker {
             val publishedAt = json.optString("published_at", "")
 
             // Find the first APK asset
-            val assets = json.optJSONArray("assets") ?: return null
+            val assets = json.optJSONArray("assets") ?: return UpdateCheck.Failed
             var apkUrl: String? = null
             var apkSize = 0L
             var sha256: String? = null
@@ -95,9 +106,9 @@ object UpdateChecker {
                 }
             }
 
-            if (apkUrl == null) return null
+            if (apkUrl == null) return UpdateCheck.Failed
 
-            UpdateInfo(
+            UpdateCheck.Found(UpdateInfo(
                 version = tagName,
                 title = name,
                 changelog = changelog,
@@ -105,10 +116,10 @@ object UpdateChecker {
                 apkSize = apkSize,
                 publishedAt = publishedAt,
                 sha256 = sha256
-            )
+            ))
         } catch (e: Exception) {
             Log.w("FreeFCC-Update", "fetchLatest failed: ${e.javaClass.simpleName}: ${e.message}")
-            null
+            UpdateCheck.Failed
         } finally {
             conn?.disconnect()
         }

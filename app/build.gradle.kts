@@ -16,6 +16,11 @@ android {
         targetSdk = 35
         versionCode = 22
         versionName = "1.5.5"
+
+        // Repo whose GitHub Releases the in-app updater follows and the Support
+        // page links as source. Override with -PupdateRepo=owner/name.
+        val updateRepo = (project.findProperty("updateRepo") as String?) ?: "abo-t/FreeFCC"
+        buildConfigField("String", "UPDATE_REPO", "\"$updateRepo\"")
     }
 
     val keystorePropsFile = rootProject.file("keystore.properties")
@@ -77,6 +82,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
