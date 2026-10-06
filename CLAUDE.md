@@ -1,5 +1,8 @@
 # FreeFCC - fork CEO
 
+**Stan i następny krok:** `kolejka_sesji.md` - czytaj `⏭ START TUTAJ` PRZED jakąkolwiek pracą.
+**Domknięcie sesji:** rytuał i higiena → globalny skill `kolejka-sesji`.
+
 Fork publicznego repo `doesthings/FreeFCC` (AGPL-3.0): aplikacja Android (Kotlin, Compose) wysyłająca
 ramki DUML do kontrolerów DJI z ekranem. Opis protokołu, profili i budowania → `README.md`.
 
