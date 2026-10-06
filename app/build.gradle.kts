@@ -14,8 +14,8 @@ android {
         applicationId = "com.freefcc.app"
         minSdk = 29
         targetSdk = 35
-        versionCode = 22
-        versionName = "1.5.5"
+        versionCode = 23
+        versionName = "1.6.0"
 
         // Repo whose GitHub Releases the in-app updater follows and the Support
         // page links as source. Override with -PupdateRepo=owner/name.
