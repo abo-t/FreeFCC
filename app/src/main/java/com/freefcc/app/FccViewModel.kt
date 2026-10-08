@@ -737,23 +737,37 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
 
     /**
      * Writes the flight controller's max altitude: 500 m (unlock) or 120 m.
-     * Frames and port come from [AircraftProfile.altitudeAsset]; a profile without
-     * a measured write has no card, so the null branch only guards the API.
-     * Same transport pattern and the same no-HardwareLock reasoning as [setLed]:
-     * the write goes to the FLYC inject port, not the radio port the keepalive
-     * holds. The parameter persists across DJI Fly relinks (lmdegreeds dump on
+     * A profile without a measured write has no card, so the null branches only
+     * guard the API. Two routes for 500 m, so one hardware test settles both:
+     *
+     * - route A (default): [AircraftProfile.altitudeAsset], the FLYC inject port
+     *   40008 like [setLed] - same transport pattern, no HardwareLock, because
+     *   the keepalive holds the radio port, not this one;
+     * - route B ([viaRadio]): [AircraftProfile.altitudeRadioAsset], the standard
+     *   DUML port inside a service-mode session, the way both hardware
+     *   measurements sent this write. Holds HardwareLock like [enableFcc] -
+     *   a fresh connection on 40009 evicts the previous client (lmdegreeds),
+     *   so it must not interleave with a keepalive tick. Timing from the asset.
+     *
+     * The parameter persists across DJI Fly relinks (lmdegreeds dump on
      * RC 2 + Lito X1), so it is sent once and never by the keepalive.
      *
-     * @param unlock true for 500 m, false for 120 m
+     * @param unlock true for 500 m, false for 120 m (120 m goes by route A only)
+     * @param viaRadio route B, see above
      */
-    fun setAltitudeLimit(unlock: Boolean) {
+    fun setAltitudeLimit(unlock: Boolean, viaRadio: Boolean = false) {
         if (_state.value.isAltitudeBusy) {
             log(s(R.string.log_altitude_busy), Tone.ERROR)
             return
         }
-        val asset = AircraftProfile.altitudeAsset(AircraftProfile.get(app), unlock)
+        val code = AircraftProfile.get(app)
+        val asset = if (viaRadio) AircraftProfile.altitudeRadioAsset(code) else AircraftProfile.altitudeAsset(code, unlock)
         if (asset == null) {
             log(s(R.string.log_altitude_no_profile), Tone.ERROR)
+            return
+        }
+        if (viaRadio && !beginHardwareOp()) {
+            log(s(R.string.log_hw_busy), Tone.ERROR)
             return
         }
         val metres = if (unlock) 500 else 120
@@ -766,15 +780,28 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                 val profile = Profiles.load(app, asset)
                 log(s(R.string.log_altitude_profile_loaded, profile.frames.size, profile.port), Tone.BUSY)
 
-                if (writeParamProfile(profile)) {
+                val sent = if (viaRadio) {
+                    transport.sendFrames(
+                        frames = profile.frames,
+                        rounds = profile.rounds,
+                        interFrameDelayMs = profile.interFrameDelay,
+                        interRoundDelayMs = profile.interRoundDelay,
+                        readWindowMs = profile.readWindowMs,
+                        port = profile.port
+                    )
+                } else {
+                    writeParamProfile(profile)
+                }
+
+                if (sent) {
                     update {
                         copy(
                             isAltitudeBusy = false,
-                            altitudeStatus = s(R.string.altitude_status_fmt, metres),
+                            altitudeStatus = s(R.string.altitude_status_fmt, metres, profile.port),
                             altitudeTone = if (unlock) Tone.OK else Tone.INFO
                         )
                     }
-                    log(s(R.string.log_altitude_set, metres), Tone.OK)
+                    log(s(R.string.log_altitude_set, metres, profile.port), Tone.OK)
                 } else {
                     update { copy(isAltitudeBusy = false, altitudeStatus = s(R.string.altitude_status_failed), altitudeTone = Tone.ERROR) }
                     log(s(R.string.log_altitude_failed), Tone.ERROR)
@@ -782,6 +809,8 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
             } catch (e: Exception) {
                 log(s(R.string.log_altitude_error, e.message.orEmpty()), Tone.ERROR)
                 update { copy(isAltitudeBusy = false, altitudeStatus = s(R.string.error_fmt, e.message.orEmpty()), altitudeTone = Tone.ERROR) }
+            } finally {
+                if (viaRadio) endHardwareOp()
             }
         }
     }

@@ -82,4 +82,17 @@ object AircraftProfile {
         LITO_X1 -> if (unlock) "altitude_500_lito_x1.json" else "altitude_120_lito_x1.json"
         else -> error("Unknown aircraft profile: $code")
     }
+
+    /**
+     * Route B for the 500 m write: the same frame on the standard DUML port 40009,
+     * as MOBILE_APP index 4 inside a service-mode session - the port and identity
+     * both hardware measurements of this write used (upstream v1.4.01 on a Lito X1,
+     * lmdegreeds parameter dump). Null where [altitudeAsset] is null. Shares the
+     * port with the keepalive, so the caller holds [HardwareLock].
+     */
+    fun altitudeRadioAsset(code: String): String? = when (code) {
+        UNIVERSAL -> null
+        LITO_X1 -> "altitude_500_lito_x1_40009.json"
+        else -> error("Unknown aircraft profile: $code")
+    }
 }

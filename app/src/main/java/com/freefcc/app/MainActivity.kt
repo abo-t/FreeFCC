@@ -484,10 +484,13 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                     }
                 }
                 Spacer(Modifier.height(16.dp))
+                val altitudeEnabled = state.isConnected && !state.isAltitudeBusy && !state.isHardwareBusy
+                // Two routes for 500 m (A: inject port, B: radio port in service mode),
+                // so one hardware test tells which one the aircraft takes.
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Button(
-                        onClick = { viewModel.setAltitudeLimit(true) },
-                        enabled = state.isConnected && !state.isAltitudeBusy && !state.isHardwareBusy,
+                        onClick = { viewModel.setAltitudeLimit(unlock = true) },
+                        enabled = altitudeEnabled,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Green,
                             contentColor = BgDark,
@@ -501,20 +504,36 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
                         Text(stringResource(R.string.btn_altitude_500), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
                     Button(
-                        onClick = { viewModel.setAltitudeLimit(false) },
-                        enabled = state.isConnected && !state.isAltitudeBusy && !state.isHardwareBusy,
+                        onClick = { viewModel.setAltitudeLimit(unlock = true, viaRadio = true) },
+                        enabled = altitudeEnabled,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
-                            contentColor = TextGray,
-                            disabledContainerColor = TextGray.copy(0.1f),
-                            disabledContentColor = TextGray.copy(0.3f)
+                            contentColor = Green,
+                            disabledContainerColor = Green.copy(0.1f),
+                            disabledContentColor = Green.copy(0.3f)
                         ),
                         shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.5.dp, TextGray.copy(0.5f)),
+                        border = BorderStroke(1.5.dp, Green.copy(0.5f)),
                         modifier = Modifier.weight(1f).height(48.dp)
                     ) {
-                        Text(stringResource(R.string.btn_altitude_120), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(stringResource(R.string.btn_altitude_500_radio), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
+                }
+                Spacer(Modifier.height(10.dp))
+                Button(
+                    onClick = { viewModel.setAltitudeLimit(unlock = false) },
+                    enabled = altitudeEnabled,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = TextGray,
+                        disabledContainerColor = TextGray.copy(0.1f),
+                        disabledContentColor = TextGray.copy(0.3f)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.5.dp, TextGray.copy(0.5f)),
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
+                ) {
+                    Text(stringResource(R.string.btn_altitude_120), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }

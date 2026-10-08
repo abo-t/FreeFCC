@@ -53,7 +53,29 @@ class AircraftProfileTest {
             asset(AircraftProfile.ledAsset(code, on = false))
             AircraftProfile.altitudeAsset(code, unlock = true)?.let { asset(it) }
             AircraftProfile.altitudeAsset(code, unlock = false)?.let { asset(it) }
+            AircraftProfile.altitudeRadioAsset(code)?.let { asset(it) }
         }
+    }
+
+    /**
+     * Route B sends the same max_height frame on the standard DUML port as
+     * MOBILE_APP index 4 with ACK_BEFORE_EXEC, between the service-mode enter and
+     * exit frames of fcc.json - the port and identity of both hardware measurements.
+     */
+    @Test
+    fun litoX1AltitudeRadioRouteWrapsTheWriteInServiceMode() {
+        val maxHeight = paramHash("g_config.flying_limit.max_height")
+        val json = asset("altitude_500_lito_x1_40009.json")
+        assertEquals(
+            listOf("16:88:18:030100", "3:249:3:${maxHeight}f401", "16:88:18:030100"),
+            frames(json)
+        )
+        val full = frames(asset("fcc.json"))
+        assertEquals(listOf(full[0], full[2], full[20]), frames(json))
+        assertEquals(130, intField(json, "sender"))
+        assertEquals(32, intField(json, "cmd_type"))
+        assertTrue("route B must use the default DUML port", !json.contains("\"port\""))
+        assertEquals(null, AircraftProfile.altitudeRadioAsset(AircraftProfile.UNIVERSAL))
     }
 
     /**

@@ -52,12 +52,13 @@
     <string name="btn_led_on">LED ON</string>
     <string name="btn_led_off">LED OFF</string>
     <string name="altitude_title">Altitude limit (Lito X1)</string>
-    <string name="altitude_desc">Writes the flight controller\'s max altitude: 500 m, the ceiling the Lito X1 itself reports as its maximum, or 120 m back. Stays after DJI Fly reconnects. Requires DJI Fly running with aircraft connected. The height rules where you fly still apply.</string>
+    <string name="altitude_desc">Writes the flight controller\'s max altitude: 500 m, the ceiling the Lito X1 itself reports as its maximum, or 120 m back. Two routes for 500 m: port 40008 like the LED write, or port 40009 inside a service-mode session, the route both hardware measurements used. Try 40008 first; check the max altitude slider in DJI Fly after each. Stays after DJI Fly reconnects. Requires DJI Fly running with aircraft connected. The height rules where you fly still apply.</string>
     <string name="altitude_status_line">Status: %1$s</string>
-    <string name="btn_altitude_500">500 m</string>
-    <string name="btn_altitude_120">120 m</string>
+    <string name="btn_altitude_500">500 m (40008)</string>
+    <string name="btn_altitude_500_radio">500 m (40009)</string>
+    <string name="btn_altitude_120">120 m (40008)</string>
     <string name="altitude_writing_fmt">Setting altitude limit to %1$d m...</string>
-    <string name="altitude_status_fmt">%1$d m</string>
+    <string name="altitude_status_fmt">%1$d m sent on port %2$d</string>
     <string name="altitude_status_failed">Failed - is DJI Fly running?</string>
     <string name="autofcc_title">Auto-FCC</string>
     <string name="autofcc_desc">Auto-connect, apply FCC, start keepalive, and launch DJI Fly.</string>
@@ -223,7 +224,7 @@
     <string name="log_altitude_busy">Altitude limit busy - please wait.</string>
     <string name="log_altitude_no_profile">Altitude limit: no measured write for this aircraft profile</string>
     <string name="log_altitude_profile_loaded">Loaded altitude profile: %1$d frames (port %2$d)</string>
-    <string name="log_altitude_set">Altitude limit written: %1$d m - check the max altitude slider in DJI Fly</string>
+    <string name="log_altitude_set">Altitude limit sent: %1$d m on port %2$d - check the max altitude slider in DJI Fly</string>
     <string name="log_altitude_failed">Altitude limit write failed - make sure DJI Fly is running with aircraft connected</string>
     <string name="log_altitude_error">Altitude limit error: %1$s</string>
     <string name="log_querying_info">Querying device info...</string>

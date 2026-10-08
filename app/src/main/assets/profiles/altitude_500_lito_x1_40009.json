@@ -1,0 +1,17 @@
+{
+  "name": "Altitude limit 500 m via radio port (Lito X1)",
+  "description": "Route B for the same write as altitude_500_lito_x1.json: g_config.flying_limit.max_height = 500 (hash 8a237103, 0x01F4 U16 LE) sent the way both hardware measurements sent it - on the standard DUML port 40009 as MOBILE_APP index 4 with ACK_BEFORE_EXEC, between the service-mode enter and exit frames of fcc.json (frames 1, 3 and 21 of that profile). doesthings/FreeFCC v1.4.01 (issue #9, Lito X1, 500 m in DJI Fly) and lmdegreeds/dji_fcc_gpsoff (parameter dump 120 -> 500, doc/PROTOCOL.md) both used this port and identity. Timing as fcc.json. Holds the hardware lock while it runs, because the keepalive shares this port.",
+  "sender": 130,
+  "sender_desc": "MOBILE_APP, index 4",
+  "cmd_type": 32,
+  "cmd_type_desc": "Request, ACK_BEFORE_EXEC, no encryption",
+  "rounds": 2,
+  "inter_frame_delay_ms": 30,
+  "inter_round_delay_ms": 100,
+  "read_window_ms": 50,
+  "frames": [
+    { "s": 16, "i": 88,  "d": 18, "p": "030100",       "note": "AUTOTEST set: enter service mode (dst=SVO) - frame 1 of fcc.json" },
+    { "s": 3,  "i": 249, "d": 3,  "p": "8a237103f401", "note": "FLYCONTROLLER write param by hash: g_config.flying_limit.max_height = 500 (0x01F4 LE) - frame 3 of fcc.json" },
+    { "s": 16, "i": 88,  "d": 18, "p": "030100",       "note": "AUTOTEST exit service mode (dst=SVO) - frame 21 of fcc.json" }
+  ]
+}
