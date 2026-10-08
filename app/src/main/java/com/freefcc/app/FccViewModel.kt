@@ -57,6 +57,7 @@ data class AppState(
     val logMessages: List<LogEntry> = emptyList(),
     val isExportingLog: Boolean = false,
     val language: String = "",
+    val fccProfile: String = FccProfile.UNIVERSAL,
     // Update state
     val updateInfo: UpdateInfo? = null,
     val updateNoRelease: Boolean = false,
@@ -133,7 +134,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
         val manual = prefs.getString("manual_aircraft_sn", "").orEmpty()
         val cachedSerial = prefs.getString("aircraft_serial", "").orEmpty()
         val shown = if (manual.isNotEmpty()) manual else cachedSerial
-        update { copy(manualSerial = manual, aircraftSerial = shown, language = Lang.get(app)) }
+        update { copy(manualSerial = manual, aircraftSerial = shown, language = Lang.get(app), fccProfile = FccProfile.get(app)) }
     }
 
     /**
@@ -193,6 +194,19 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
         Lang.set(app, code)
         res = Lang.wrap(app)
         update { copy(language = code) }
+    }
+
+    // --- FCC profile ---
+
+    /**
+     * Saves the FCC frame set ([FccProfile]). A running keepalive is restarted so
+     * its next tick already sends the frames of the new profile.
+     */
+    fun setFccProfile(code: String) {
+        FccProfile.set(app, code)
+        update { copy(fccProfile = code) }
+        log(s(R.string.log_fcc_profile_set, s(FccProfile.label(code))))
+        if (_state.value.isKeepaliveRunning) FccKeepaliveService.start(app)
     }
 
     // --- Auto-FCC ---
@@ -256,7 +270,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                 update { copy(status = "applying", isBusy = true, busyProgress = 0f, message = s(R.string.msg_applying_fcc)) }
                 log(s(R.string.log_auto_applying), Tone.BUSY)
 
-                val profile = Profiles.load(app, "fcc.json")
+                val profile = Profiles.load(app, FccProfile.applyAsset(FccProfile.get(app)))
                 val success = transport.sendFrames(
                     frames = profile.frames,
                     rounds = profile.rounds,
@@ -365,8 +379,9 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
     // --- FCC ---
 
     /**
-     * Sends the 21-frame FCC unlock profile (2 rounds; timing comes from fcc.json).
-     * The profile already runs 2 rounds internally for reliability.
+     * Sends the FCC unlock profile chosen in [FccProfile]: fcc.json (21 frames,
+     * 2 rounds) or fcc_lito_x1.json (2 frames, 8 rounds 1 s apart). Frames,
+     * rounds and timing all come from the JSON asset.
      */
     fun enableFcc() {
         if (!beginHardwareOp()) {
@@ -378,7 +393,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
 
         runOnIO {
             try {
-                val profile = Profiles.load(app, "fcc.json")
+                val profile = Profiles.load(app, FccProfile.applyAsset(FccProfile.get(app)))
                 log(s(R.string.log_fcc_profile_loaded, profile.frames.size, profile.rounds), Tone.BUSY)
 
                 val success = transport.sendFrames(
@@ -449,6 +464,9 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                 if (success) {
                     update { copy(status = "connected", message = s(R.string.msg_ce_restored), isFccEnabled = false, isBusy = false) }
                     log(s(R.string.msg_ce_restored), Tone.OK)
+                    // ce_restore.json resets the region, not the SDR register the
+                    // Lito X1 profile writes; a full aircraft power cycle drops both.
+                    if (FccProfile.get(app) == FccProfile.LITO_X1) log(s(R.string.log_ce_lito_power_cycle))
                 } else {
                     update { copy(status = "connected", message = s(R.string.msg_ce_failed), isBusy = false) }
                     log(s(R.string.msg_ce_failed), Tone.ERROR)

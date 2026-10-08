@@ -29,6 +29,9 @@ Synchronizacja z oryginałem: `git fetch upstream` + `git merge upstream/main` n
 
 - **Aktualizator i link „Source” idą za `BuildConfig.UPDATE_REPO`** (`app/build.gradle.kts`, domyślnie
   `abo-t/FreeFCC`, nadpisanie `-PupdateRepo=owner/name`). Repo bez wydań = komunikat „brak wydań”, nie błąd sieci.
+- **Profil FCC do wyboru na ekranie Info** (`FccProfile.kt`): „Uniwersalny” = `fcc.json` (21 ramek z oryginału),
+  „Lito X1” = `fcc_lito_x1.json` (2 ramki × 8 co 1 s, pomiar `lmdegreeds/dji_fcc_gpsoff`). Kolejności ramek
+  Lito X1 pilnuje `FccProfileTest` - odwrócona daje moc bez 5,8 GHz.
 - **Wersja ma jedno źródło: `versionName` w `app/build.gradle.kts`**; kod czyta `BuildConfig.VERSION_NAME`.
 - **Teksty UI tylko w `res/values/strings.xml` (EN) i `res/values-pl/strings.xml` (PL)** - nowy tekst idzie do
   OBU plików, z tymi samymi parametrami; pilnuje tego `StringsParityTest`. Język wybiera użytkownik w aplikacji

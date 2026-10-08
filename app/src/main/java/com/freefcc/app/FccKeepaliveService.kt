@@ -21,9 +21,10 @@ import kotlinx.coroutines.launch
  * profile every [INTERVAL_MS] milliseconds. Runs independently of the
  * Activity lifecycle so it continues working when the user switches to DJI Fly.
  *
- * The keepalive profile is loaded once at service creation and cached —
- * re-parsing the JSON asset and rebuilding frames with CRC on every 2-second
- * tick was wasteful CPU on the controller.
+ * The keepalive profile ([FccProfile.keepaliveAsset]) is loaded on every start
+ * command and cached — re-parsing the JSON asset and rebuilding frames with CRC
+ * on every 2-second tick was wasteful CPU on the controller. Loading per start
+ * (not per onCreate) lets a profile change take effect by calling [start] again.
  *
  * The persistent keepalive flag (stored in SharedPreferences) is read at start
  * so a sticky restart after a system kill respects the user's last intent.
@@ -71,7 +72,7 @@ class FccKeepaliveService : Service() {
     private var keepaliveJob: Job? = null
     private val transport = DumlTransport()
 
-    /** Cached at onCreate — loading JSON + building frames on every 2s tick is wasteful. */
+    /** Cached per start command — loading JSON + building frames on every 2s tick is wasteful. */
     private var cachedFrames: List<ByteArray>? = null
     private var cachedInterFrameDelay: Long = 100
     private var cachedReadWindowMs: Int = 80
@@ -80,10 +81,13 @@ class FccKeepaliveService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        // Load the keepalive profile once and cache the built frames.
-        // If the asset is missing/corrupt the cache stays null and the loop no-ops.
+    }
+
+    /** Loads the keepalive frames of the current [FccProfile]; a missing/corrupt asset leaves the cache null. */
+    private fun loadProfile() {
+        cachedFrames = null
         runCatching {
-            val profile = Profiles.load(this, "fcc_keepalive.json")
+            val profile = Profiles.load(this, FccProfile.keepaliveAsset(FccProfile.get(this)))
             cachedFrames = profile.frames
             cachedInterFrameDelay = profile.interFrameDelay
             cachedReadWindowMs = profile.readWindowMs
@@ -109,6 +113,7 @@ class FccKeepaliveService : Service() {
                 }
                 // If the profile failed to load, don't become a silent
                 // foreground no-op — stop immediately.
+                loadProfile()
                 if (cachedFrames == null) {
                     stopSelf()
                     return START_NOT_STICKY

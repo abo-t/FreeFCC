@@ -555,6 +555,35 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
 
         Spacer(Modifier.height(16.dp))
 
+        // FCC frame set - see FccProfile and assets/profiles/fcc_lito_x1.json.
+        GlowCard {
+            Text(stringResource(R.string.fcc_profile_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FccProfile.OPTIONS.forEach { code ->
+                    val selected = state.fccProfile == code
+                    Button(
+                        onClick = { if (!selected) viewModel.setFccProfile(code) },
+                        enabled = !state.isHardwareBusy,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selected) Cyan else Color.Transparent,
+                            contentColor = if (selected) BgDark else Cyan
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, Cyan.copy(if (selected) 0.3f else 0.6f)),
+                        contentPadding = PaddingValues(horizontal = 4.dp),
+                        modifier = Modifier.weight(1f).height(44.dp)
+                    ) {
+                        Text(stringResource(FccProfile.label(code)), fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
+                    }
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            BodyText(stringResource(R.string.fcc_profile_hint))
+        }
+
+        Spacer(Modifier.height(16.dp))
+
         GlowCard {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

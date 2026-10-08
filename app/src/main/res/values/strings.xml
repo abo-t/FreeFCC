@@ -70,6 +70,12 @@
     <string name="lang_system">System</string>
     <string name="lang_en">English</string>
     <string name="lang_pl">Polski</string>
+    <string name="fcc_profile_title">FCC profile</string>
+    <string name="fcc_profile_universal">Universal</string>
+    <string name="fcc_profile_lito_x1">Lito X1</string>
+    <string name="fcc_profile_hint">Universal: 21 frames, tested on Mini 4/5 Pro, Air 3S, Neo and Avata 360. Lito X1: 2 frames sent 8 times, one second apart, measured on RC 2 + Lito X1 by the dji_fcc_gpsoff project.</string>
+    <string name="log_fcc_profile_set">FCC profile: %1$s</string>
+    <string name="log_ce_lito_power_cycle">Lito X1: to be sure CE is back, power the aircraft off and on.</string>
 
     <!-- Log page -->
     <string name="log_title">Activity Log</string>
