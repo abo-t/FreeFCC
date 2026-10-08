@@ -67,7 +67,7 @@ object Profiles {
                 dst = f.getInt("d"),
                 payload = hexToBytes(f.optString("p", ""))
             ))
-            if (useWrapper) wrapFrame(inner) else inner
+            if (useWrapper) DumlBuilder.wrap(inner) else inner
         }
 
         return Profile(sender, cmdType, rounds, interFrame, interRound, readWindow, needsResponse, port, frames)
@@ -128,27 +128,5 @@ object Profiles {
         return ByteArray(clean.length / 2) { i ->
             clean.substring(i * 2, i * 2 + 2).toInt(16).toByte()
         }
-    }
-
-    /**
-     * Wraps an inner DUML frame with the 8-byte outer header used by
-     * certain commands (like LED control on port 40007).
-     *
-     * Format: [0x55][0xCC][0x30][0x75][4-byte LE length][inner frame]
-     */
-    private fun wrapFrame(inner: ByteArray): ByteArray {
-        val out = ByteArray(8 + inner.size)
-        out[0] = 0x55
-        out[1] = 0xCC.toByte()
-        out[2] = 0x30
-        out[3] = 0x75
-        // 4-byte little-endian length of the inner frame
-        val len = inner.size
-        out[4] = (len and 0xFF).toByte()
-        out[5] = ((len shr 8) and 0xFF).toByte()
-        out[6] = ((len shr 16) and 0xFF).toByte()
-        out[7] = ((len shr 24) and 0xFF).toByte()
-        System.arraycopy(inner, 0, out, 8, inner.size)
-        return out
     }
 }

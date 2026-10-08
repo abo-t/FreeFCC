@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  * profile every [INTERVAL_MS] milliseconds. Runs independently of the
  * Activity lifecycle so it continues working when the user switches to DJI Fly.
  *
- * The keepalive profile ([FccProfile.keepaliveAsset]) is loaded on every start
+ * The keepalive profile ([AircraftProfile.keepaliveAsset]) is loaded on every start
  * command and cached — re-parsing the JSON asset and rebuilding frames with CRC
  * on every 2-second tick was wasteful CPU on the controller. Loading per start
  * (not per onCreate) lets a profile change take effect by calling [start] again.
@@ -83,11 +83,11 @@ class FccKeepaliveService : Service() {
         createNotificationChannel()
     }
 
-    /** Loads the keepalive frames of the current [FccProfile]; a missing/corrupt asset leaves the cache null. */
+    /** Loads the keepalive frames of the current [AircraftProfile]; a missing/corrupt asset leaves the cache null. */
     private fun loadProfile() {
         cachedFrames = null
         runCatching {
-            val profile = Profiles.load(this, FccProfile.keepaliveAsset(FccProfile.get(this)))
+            val profile = Profiles.load(this, AircraftProfile.keepaliveAsset(AircraftProfile.get(this)))
             cachedFrames = profile.frames
             cachedInterFrameDelay = profile.interFrameDelay
             cachedReadWindowMs = profile.readWindowMs

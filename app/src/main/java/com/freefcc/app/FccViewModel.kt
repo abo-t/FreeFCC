@@ -57,7 +57,7 @@ data class AppState(
     val logMessages: List<LogEntry> = emptyList(),
     val isExportingLog: Boolean = false,
     val language: String = "",
-    val fccProfile: String = FccProfile.UNIVERSAL,
+    val aircraftProfile: String = AircraftProfile.UNIVERSAL,
     // Update state
     val updateInfo: UpdateInfo? = null,
     val updateNoRelease: Boolean = false,
@@ -134,7 +134,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
         val manual = prefs.getString("manual_aircraft_sn", "").orEmpty()
         val cachedSerial = prefs.getString("aircraft_serial", "").orEmpty()
         val shown = if (manual.isNotEmpty()) manual else cachedSerial
-        update { copy(manualSerial = manual, aircraftSerial = shown, language = Lang.get(app), fccProfile = FccProfile.get(app)) }
+        update { copy(manualSerial = manual, aircraftSerial = shown, language = Lang.get(app), aircraftProfile = AircraftProfile.get(app)) }
     }
 
     /**
@@ -199,13 +199,13 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
     // --- FCC profile ---
 
     /**
-     * Saves the FCC frame set ([FccProfile]). A running keepalive is restarted so
-     * its next tick already sends the frames of the new profile.
+     * Saves the aircraft profile ([AircraftProfile]: FCC and LED frames). A running
+     * keepalive is restarted so its next tick already sends the new profile's frames.
      */
-    fun setFccProfile(code: String) {
-        FccProfile.set(app, code)
-        update { copy(fccProfile = code) }
-        log(s(R.string.log_fcc_profile_set, s(FccProfile.label(code))))
+    fun setAircraftProfile(code: String) {
+        AircraftProfile.set(app, code)
+        update { copy(aircraftProfile = code) }
+        log(s(R.string.log_aircraft_profile_set, s(AircraftProfile.label(code))))
         if (_state.value.isKeepaliveRunning) FccKeepaliveService.start(app)
     }
 
@@ -270,7 +270,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                 update { copy(status = "applying", isBusy = true, busyProgress = 0f, message = s(R.string.msg_applying_fcc)) }
                 log(s(R.string.log_auto_applying), Tone.BUSY)
 
-                val profile = Profiles.load(app, FccProfile.applyAsset(FccProfile.get(app)))
+                val profile = Profiles.load(app, AircraftProfile.fccAsset(AircraftProfile.get(app)))
                 val success = transport.sendFrames(
                     frames = profile.frames,
                     rounds = profile.rounds,
@@ -379,7 +379,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
     // --- FCC ---
 
     /**
-     * Sends the FCC unlock profile chosen in [FccProfile]: fcc.json (21 frames,
+     * Sends the FCC unlock profile chosen in [AircraftProfile]: fcc.json (21 frames,
      * 2 rounds) or fcc_lito_x1.json (2 frames, 8 rounds 1 s apart). Frames,
      * rounds and timing all come from the JSON asset.
      */
@@ -393,7 +393,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
 
         runOnIO {
             try {
-                val profile = Profiles.load(app, FccProfile.applyAsset(FccProfile.get(app)))
+                val profile = Profiles.load(app, AircraftProfile.fccAsset(AircraftProfile.get(app)))
                 log(s(R.string.log_fcc_profile_loaded, profile.frames.size, profile.rounds), Tone.BUSY)
 
                 val success = transport.sendFrames(
@@ -466,7 +466,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                     log(s(R.string.msg_ce_restored), Tone.OK)
                     // ce_restore.json resets the region, not the SDR register the
                     // Lito X1 profile writes; a full aircraft power cycle drops both.
-                    if (FccProfile.get(app) == FccProfile.LITO_X1) log(s(R.string.log_ce_lito_power_cycle))
+                    if (AircraftProfile.get(app) == AircraftProfile.LITO_X1) log(s(R.string.log_ce_lito_power_cycle))
                 } else {
                     update { copy(status = "connected", message = s(R.string.msg_ce_failed), isBusy = false) }
                     log(s(R.string.msg_ce_failed), Tone.ERROR)
@@ -650,15 +650,17 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
 
     /**
      * Turns the aircraft arm LEDs on or off.
-     * Uses port 40007 (different from the standard 40009 DUML port).
+     * Frames and port come from [AircraftProfile.ledAsset]: universal writes the
+     * g_config.* LED parameter on 40007 (wrapped), Lito X1 writes forearm_led_ctrl
+     * on 40008 (unwrapped) - never the standard 40009 DUML port.
      * Requires DJI Fly running with the aircraft connected.
      *
      * Sends the LED command in 2 bursts of 5 writes each (10 total), with
      * 100ms between writes - matching the reference app's pattern for
      * reliability.
      *
-     * **Does NOT hold HardwareLock.** The LED command targets port 40007
-     * (camera/LED subsystem) while the FCC keepalive targets port 40009
+     * **Does NOT hold HardwareLock.** The LED command targets port 40007/40008
+     * (flight controller parameter) while the FCC keepalive targets port 40009
      * (radio subsystem). They use different ports and different subsystems,
      * so they can run concurrently without conflict. Holding the lock during
      * the LED command would block the keepalive for ~1.5s, creating a gap
@@ -679,11 +681,10 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
 
         runOnIO {
             try {
-                val fileName = if (on) "led_on.json" else "led_off.json"
-                val profile = Profiles.load(app, fileName)
+                val profile = Profiles.load(app, AircraftProfile.ledAsset(AircraftProfile.get(app), on))
                 log(s(R.string.log_led_profile_loaded, profile.frames.size, profile.port), Tone.BUSY)
 
-                // Separate transport instance - the LED command on port 40007
+                // Separate transport instance - the LED command on port 40007/40008
                 // must not share state with the FCC transport on port 40009.
                 val ledTransport = DumlTransport()
 
@@ -783,13 +784,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
         update { copy(isProbingSerial = true) }
         runOnIO {
             try {
-                // Active query first (fast, deterministic when the aircraft is
-                // linked), then a longer passive telemetry listen as a fallback.
-                var serial = transport.probeSerialActive(800)
-                if (serial.isEmpty()) {
-                    log(s(R.string.log_serial_listen), Tone.BUSY)
-                    serial = transport.probeSerial(8000)
-                }
+                val serial = readSerialFromAircraft()
                 if (serial.isNotEmpty()) {
                     update { copy(aircraftSerial = serial) }
                     prefs.edit().putString("aircraft_serial", serial).apply()
@@ -802,6 +797,22 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                 endHardwareOp()
             }
         }
+    }
+
+    /**
+     * Asks the aircraft for its serial, most deterministic route first: the 40009
+     * queries, then 00:51 on 40007 (the route that answers on Lito X1), then a long
+     * passive telemetry listen. Touches DJI Fly's video port, so call it only from
+     * an action the user started (Read serial, 4G activation).
+     */
+    private fun readSerialFromAircraft(): String {
+        var serial = transport.probeSerialActive(800)
+        if (serial.isEmpty()) serial = transport.querySerialOnVideoPort()
+        if (serial.isEmpty()) {
+            log(s(R.string.log_serial_listen), Tone.BUSY)
+            serial = transport.probeSerial(8000)
+        }
+        return serial
     }
 
     // --- Log export ---
@@ -1122,10 +1133,9 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
             return serial
         }
 
-        // 3. Active query, then 4. longer passive listen.
+        // 3. Active queries, then 4. longer passive listen.
         log(s(R.string.log_reading_serial), Tone.BUSY)
-        serial = transport.probeSerialActive(800)
-        if (serial.isEmpty()) serial = transport.probeSerial(8000)
+        serial = readSerialFromAircraft()
         if (serial.isNotEmpty()) {
             update { copy(aircraftSerial = serial) }
             prefs.edit().putString("aircraft_serial", serial).apply()

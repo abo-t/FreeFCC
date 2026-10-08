@@ -1,7 +1,7 @@
 {
   "name": "FCC Lito X1",
   "description": "Two frames, cut from fcc.json's 21 by frame-subset experiments on RC 2 + Lito X1 (aircraft 01.00.0400, RC 10.00.0800, DJI Fly 1.21.8), measured 2026-08-19 by lmdegreeds/dji_fcc_gpsoff (AGPL-3.0, doc/fcc-minimal-sequence.md). 07:30 gives the 5.8 GHz band, 09:27 gives transmit power and makes the switch survive a DJI Fly restart; only a full aircraft power cycle drops it.",
-  "_order": "07:30 FIRST, then 09:27. The reverse order gave transmit power and NO 5.8, on hardware, repeatedly. FccProfileTest guards it.",
+  "_order": "07:30 FIRST, then 09:27. The reverse order gave transmit power and NO 5.8, on hardware, repeatedly. AircraftProfileTest guards it.",
   "_cadence": "Eight sends one second apart. A single send did not take on a live session; a one-second burst landed on the 3rd-4th shot. DumlTransport opens one connection per frame, so every send is a separate connection.",
   "sender": 130,
   "sender_desc": "MOBILE_APP, index 4",

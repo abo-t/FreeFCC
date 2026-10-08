@@ -555,15 +555,15 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
 
         Spacer(Modifier.height(16.dp))
 
-        // FCC frame set - see FccProfile and assets/profiles/fcc_lito_x1.json.
+        // Aircraft profile - picks the FCC and LED frames, see AircraftProfile.
         GlowCard {
-            Text(stringResource(R.string.fcc_profile_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.aircraft_profile_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FccProfile.OPTIONS.forEach { code ->
-                    val selected = state.fccProfile == code
+                AircraftProfile.OPTIONS.forEach { code ->
+                    val selected = state.aircraftProfile == code
                     Button(
-                        onClick = { if (!selected) viewModel.setFccProfile(code) },
+                        onClick = { if (!selected) viewModel.setAircraftProfile(code) },
                         enabled = !state.isHardwareBusy,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (selected) Cyan else Color.Transparent,
@@ -574,12 +574,12 @@ private fun InfoPage(state: AppState, viewModel: FccViewModel) {
                         contentPadding = PaddingValues(horizontal = 4.dp),
                         modifier = Modifier.weight(1f).height(44.dp)
                     ) {
-                        Text(stringResource(FccProfile.label(code)), fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
+                        Text(stringResource(AircraftProfile.label(code)), fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
                     }
                 }
             }
             Spacer(Modifier.height(12.dp))
-            BodyText(stringResource(R.string.fcc_profile_hint))
+            BodyText(stringResource(R.string.aircraft_profile_hint))
         }
 
         Spacer(Modifier.height(16.dp))

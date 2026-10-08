@@ -6,16 +6,17 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Guards the FCC profile choice: every offered profile maps to assets that
- * exist, and the Lito X1 profile keeps the frame order and cadence that were
- * measured on hardware (lmdegreeds/dji_fcc_gpsoff, doc/fcc-minimal-sequence.md):
- * 07:30 before 09:27 - the reverse gave power and no 5.8 GHz - sent 8 times,
- * 1 s apart.
+ * Guards the aircraft profile choice: every offered profile maps to assets that
+ * exist, the Lito X1 FCC profile keeps the frame order and cadence measured on
+ * hardware (lmdegreeds/dji_fcc_gpsoff, doc/fcc-minimal-sequence.md) - 07:30
+ * before 09:27, the reverse gave power and no 5.8 GHz, sent 8 times 1 s apart -
+ * and each LED payload starts with the hash of the parameter name that model's
+ * firmware indexes.
  *
  * Plain regex over the JSON: org.json is an Android stub in local unit tests.
  * Gradle runs them with app/ as the working directory, hence the relative paths.
  */
-class FccProfileTest {
+class AircraftProfileTest {
 
     private fun asset(name: String): String {
         val file = File("src/main/assets/profiles/$name")
@@ -27,22 +28,37 @@ class FccProfileTest {
         Regex("\"$key\"\\s*:\\s*(\\d+)").find(json)?.groupValues?.get(1)?.toInt()
             ?: error("No \"$key\" in profile")
 
+    /** Frames as "s:i:d:payload", in file order. */
+    private fun frames(json: String): List<String> =
+        Regex("\\{\\s*\"s\"\\s*:\\s*(\\d+),\\s*\"i\"\\s*:\\s*(\\d+),\\s*\"d\"\\s*:\\s*(\\d+),\\s*\"p\"\\s*:\\s*\"([0-9a-fA-F]+)\"")
+            .findAll(json).map { it.groupValues.drop(1).joinToString(":") }.toList()
+
+    /**
+     * DJI flight-controller parameter hash used by 03:F8/03:F9: name + "_0",
+     * folded byte by byte modulo 0xFFFFFFFB, 4 bytes little-endian
+     * (dji_fcc_gpsoff native/duml_core.cpp param_hash).
+     */
+    private fun paramHash(name: String): String {
+        var h = 0L
+        for (b in (name + "_0").toByteArray(Charsets.US_ASCII)) h = ((h shl 8) or b.toLong()) % 0xFFFFFFFBL
+        return (0 until 4).joinToString("") { "%02x".format((h shr (8 * it)) and 0xFF) }
+    }
+
     @Test
     fun everyProfileMapsToExistingAssets() {
-        FccProfile.OPTIONS.forEach { code ->
-            asset(FccProfile.applyAsset(code))
-            asset(FccProfile.keepaliveAsset(code))
+        AircraftProfile.OPTIONS.forEach { code ->
+            asset(AircraftProfile.fccAsset(code))
+            asset(AircraftProfile.keepaliveAsset(code))
+            asset(AircraftProfile.ledAsset(code, on = true))
+            asset(AircraftProfile.ledAsset(code, on = false))
         }
     }
 
     @Test
     fun litoX1SendsChannelGroupThenSdrRegister() {
-        val json = asset("fcc_lito_x1.json")
-        val frames = Regex("\\{\\s*\"s\"\\s*:\\s*(\\d+),\\s*\"i\"\\s*:\\s*(\\d+),\\s*\"d\"\\s*:\\s*(\\d+),\\s*\"p\"\\s*:\\s*\"([0-9a-fA-F]+)\"")
-            .findAll(json).map { it.groupValues.drop(1).joinToString(":") }.toList()
         assertEquals(
             listOf("7:48:9:41550000415500000100", "9:39:9:00024800ffff0200000000"),
-            frames
+            frames(asset("fcc_lito_x1.json"))
         )
     }
 
@@ -51,5 +67,24 @@ class FccProfileTest {
         val json = asset("fcc_lito_x1.json")
         assertEquals(8, intField(json, "rounds"))
         assertEquals(1000, intField(json, "inter_round_delay_ms"))
+    }
+
+    @Test
+    fun ledPayloadsAddressTheModelsParameterName() {
+        val universal = paramHash("g_config.misc_cfg.forearm_lamp_ctrl")
+        val lito = paramHash("forearm_led_ctrl")
+        assertEquals(listOf("3:249:3:${universal}ef"), frames(asset("led_on.json")))
+        assertEquals(listOf("3:249:3:${universal}00"), frames(asset("led_off.json")))
+        assertEquals(listOf("3:249:3:${lito}ef"), frames(asset("led_on_lito_x1.json")))
+        assertEquals(listOf("3:249:3:${lito}00"), frames(asset("led_off_lito_x1.json")))
+    }
+
+    @Test
+    fun litoX1LedGoesUnwrappedToTheInjectPort() {
+        listOf("led_on_lito_x1.json", "led_off_lito_x1.json").forEach { name ->
+            val json = asset(name)
+            assertEquals(40008, intField(json, "port"))
+            assertTrue("$name must not be wrapped", !json.contains("\"wrapper\": true"))
+        }
     }
 }

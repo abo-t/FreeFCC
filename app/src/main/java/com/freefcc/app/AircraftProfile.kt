@@ -4,16 +4,21 @@ import android.content.Context
 import androidx.annotation.StringRes
 
 /**
- * Which FCC frame set the app sends: "universal" (fcc.json, 21 frames, the
- * upstream profile tested on Mini 4/5 Pro, Air 3S, Neo, Avata 360) or "lito_x1"
- * (fcc_lito_x1.json, 2 frames measured on RC 2 + Lito X1).
+ * Which aircraft the app addresses, and so which frames it sends:
+ *
+ * - "universal" - the upstream profiles: fcc.json (21 frames, tested on Mini 4/5 Pro,
+ *   Air 3S, Neo, Avata 360) and the LED write by the g_config.* parameter name on 40007.
+ * - "lito_x1" - measured on RC 2 + Lito X1 by lmdegreeds/dji_fcc_gpsoff: fcc_lito_x1.json
+ *   (2 frames) and the LED write by the Lito X1 name forearm_led_ctrl on 40008.
  *
  * The choice lives in the app's SharedPreferences like [Lang], so the Activity,
  * the ViewModel and the keepalive service all read the same value.
  */
-object FccProfile {
+object AircraftProfile {
 
     private const val PREFS = "freefcc"
+    // Key kept from the first release of this setting (1.6.0 test build), so a
+    // controller that already picked Lito X1 keeps the choice.
     private const val KEY = "fcc_profile"
 
     const val UNIVERSAL = "universal"
@@ -26,23 +31,23 @@ object FccProfile {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, UNIVERSAL) ?: UNIVERSAL
 
     fun set(context: Context, code: String) {
-        require(code in OPTIONS) { "Unknown FCC profile: $code" }
+        require(code in OPTIONS) { "Unknown aircraft profile: $code" }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, code).apply()
     }
 
     /** Display name of a profile, shared by the selector and the log. */
     @StringRes
     fun label(code: String): Int = when (code) {
-        UNIVERSAL -> R.string.fcc_profile_universal
-        LITO_X1 -> R.string.fcc_profile_lito_x1
-        else -> error("Unknown FCC profile: $code")
+        UNIVERSAL -> R.string.aircraft_profile_universal
+        LITO_X1 -> R.string.aircraft_profile_lito_x1
+        else -> error("Unknown aircraft profile: $code")
     }
 
     /** Asset sent by Enable FCC and Auto-FCC. */
-    fun applyAsset(code: String): String = when (code) {
+    fun fccAsset(code: String): String = when (code) {
         UNIVERSAL -> "fcc.json"
         LITO_X1 -> "fcc_lito_x1.json"
-        else -> error("Unknown FCC profile: $code")
+        else -> error("Unknown aircraft profile: $code")
     }
 
     /**
@@ -53,6 +58,13 @@ object FccProfile {
     fun keepaliveAsset(code: String): String = when (code) {
         UNIVERSAL -> "fcc_keepalive.json"
         LITO_X1 -> "fcc_lito_x1.json"
-        else -> error("Unknown FCC profile: $code")
+        else -> error("Unknown aircraft profile: $code")
+    }
+
+    /** Asset for LED ON / LED OFF. The parameter name, and so its hash, differs per model. */
+    fun ledAsset(code: String, on: Boolean): String = when (code) {
+        UNIVERSAL -> if (on) "led_on.json" else "led_off.json"
+        LITO_X1 -> if (on) "led_on_lito_x1.json" else "led_off_lito_x1.json"
+        else -> error("Unknown aircraft profile: $code")
     }
 }

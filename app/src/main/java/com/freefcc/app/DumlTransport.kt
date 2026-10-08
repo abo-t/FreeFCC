@@ -153,6 +153,28 @@ class DumlBuilder {
         }
 
         /**
+         * Wraps an inner DUML frame with the 8-byte outer header used on port
+         * 40007 (LED control on most aircraft, the 00:51 serial query).
+         *
+         * Format: [0x55][0xCC][0x30][0x75][4-byte LE length][inner frame]
+         */
+        fun wrap(inner: ByteArray): ByteArray {
+            val out = ByteArray(8 + inner.size)
+            out[0] = 0x55
+            out[1] = 0xCC.toByte()
+            out[2] = 0x30
+            out[3] = 0x75
+            // 4-byte little-endian length of the inner frame
+            val len = inner.size
+            out[4] = (len and 0xFF).toByte()
+            out[5] = ((len shr 8) and 0xFF).toByte()
+            out[6] = ((len shr 16) and 0xFF).toByte()
+            out[7] = ((len shr 24) and 0xFF).toByte()
+            System.arraycopy(inner, 0, out, 8, inner.size)
+            return out
+        }
+
+        /**
          * Validates a raw response frame against the request it should answer.
          *
          * Checks magic, encoded length (must exactly match the byte count received —
@@ -420,6 +442,27 @@ class DumlTransport {
                 val fromScan = extractSerial(raw)
                 if (fromScan.isNotEmpty()) return fromScan
             }
+        }
+        return ""
+    }
+
+    /**
+     * Asks the aircraft for its serial with GENERAL 00:51 (selector 0x04), wrapped,
+     * on port 40007, and reads the reply off the same socket. Confirmed on RC 2 +
+     * Lito X1 by lmdegreeds/dji_fcc_gpsoff (AircraftSerial.kt, ported from
+     * SkylabFCCfree), where the 40009 queries in [probeSerialActive] get no answer.
+     *
+     * 40007 is DJI Fly's video mirror: every connection there risks a video blip,
+     * and probing it on its own cost gpsoff its FCC. Call it only from an action
+     * the user started, never from auto-connect or the keepalive.
+     */
+    fun querySerialOnVideoPort(attempts: Int = 3, windowMs: Int = 400): String {
+        repeat(attempts) {
+            val frame = DumlBuilder.wrap(serialQueryBuilder.buildFrame(
+                DumlFrame(sender = 2, cmdType = 0x40, cmdSet = 0, cmdId = 0x51, dst = 3, payload = byteArrayOf(0x04))
+            ))
+            val serial = extractSerial(sendAndReadRaw(frame, windowMs, PORT_LED))
+            if (serial.isNotEmpty()) return serial
         }
         return ""
     }

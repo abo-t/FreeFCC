@@ -1,0 +1,16 @@
+{
+  "name": "LED Off (Lito X1)",
+  "description": "Turns off the aircraft arm LEDs on Lito X1. Lito X1 firmware names the parameter forearm_led_ctrl (hash 4e9115f3), not g_config.misc_cfg.forearm_lamp_ctrl (a259ceed) as in led_off.json. Written on the unwrapped FLYC inject port 40008, which coexists with DJI Fly. Confirmed on RC 2 + Lito X1 by lmdegreeds/dji_fcc_gpsoff (doc/DUSS-HARDWARE-FINDINGS.md, doc/PROTOCOL.md).",
+  "sender": 2,
+  "sender_desc": "MOBILE_APP, index 0",
+  "cmd_type": 64,
+  "cmd_type_desc": "Request with ACK, no encryption (0x40)",
+  "rounds": 1,
+  "inter_frame_delay_ms": 100,
+  "inter_round_delay_ms": 0,
+  "read_window_ms": 100,
+  "port": 40008,
+  "frames": [
+    { "s": 3, "i": 249, "d": 3, "p": "4e9115f300", "note": "FLYCONTROLLER write param by hash: forearm_led_ctrl = 0x00 (LED OFF)" }
+  ]
+}

@@ -29,9 +29,12 @@ Synchronizacja z oryginałem: `git fetch upstream` + `git merge upstream/main` n
 
 - **Aktualizator i link „Source” idą za `BuildConfig.UPDATE_REPO`** (`app/build.gradle.kts`, domyślnie
   `abo-t/FreeFCC`, nadpisanie `-PupdateRepo=owner/name`). Repo bez wydań = komunikat „brak wydań”, nie błąd sieci.
-- **Profil FCC do wyboru na ekranie Info** (`FccProfile.kt`): „Uniwersalny” = `fcc.json` (21 ramek z oryginału),
-  „Lito X1” = `fcc_lito_x1.json` (2 ramki × 8 co 1 s, pomiar `lmdegreeds/dji_fcc_gpsoff`). Kolejności ramek
-  Lito X1 pilnuje `FccProfileTest` - odwrócona daje moc bez 5,8 GHz.
+- **Profil drona do wyboru na ekranie Info** (`AircraftProfile.kt`) - ustala ramki FCC i LED. „Uniwersalny” =
+  `fcc.json` (21 ramek z oryginału) + LED `led_on/off.json`; „Lito X1” = `fcc_lito_x1.json` (2 ramki × 8 co 1 s) +
+  LED `led_on/off_lito_x1.json` (parametr `forearm_led_ctrl`, port 40008) - pomiary `lmdegreeds/dji_fcc_gpsoff`.
+  `AircraftProfileTest` pilnuje kolejności ramek FCC Lito X1 (odwrócona daje moc bez 5,8 GHz) i hashy LED.
+- **Numer drona: zapytanie `00:51` na 40007** (lustro wideo DJI Fly) - wyłącznie z akcji użytkownika (przycisk,
+  4G), nigdy z auto-połączenia ani keepalive; samoczynne odpytywanie 40007 kosztowało gpsoff FCC.
 - **Wersja ma jedno źródło: `versionName` w `app/build.gradle.kts`**; kod czyta `BuildConfig.VERSION_NAME`.
 - **Teksty UI tylko w `res/values/strings.xml` (EN) i `res/values-pl/strings.xml` (PL)** - nowy tekst idzie do
   OBU plików, z tymi samymi parametrami; pilnuje tego `StringsParityTest`. Język wybiera użytkownik w aplikacji
