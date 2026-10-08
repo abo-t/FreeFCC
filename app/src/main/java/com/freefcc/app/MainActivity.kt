@@ -449,6 +449,76 @@ private fun FccPage(state: AppState, viewModel: FccViewModel) {
             }
         }
 
+        // Altitude limit card - only for a profile with a measured write (Lito X1),
+        // see AircraftProfile.altitudeAsset. Same layout as the LED card above.
+        if (AircraftProfile.altitudeAsset(state.aircraftProfile, unlock = true) != null) {
+            Spacer(Modifier.height(16.dp))
+            GlowCard {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.altitude_title), color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.altitude_desc),
+                            color = TextGray,
+                            fontSize = 12.sp,
+                            lineHeight = 17.sp
+                        )
+                        if (state.altitudeStatus.isNotEmpty()) {
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                stringResource(R.string.altitude_status_line, state.altitudeStatus),
+                                color = when (state.altitudeTone) {
+                                    Tone.OK -> Green
+                                    Tone.INFO -> TextGray
+                                    Tone.BUSY -> Amber
+                                    Tone.ERROR -> Red
+                                },
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Button(
+                        onClick = { viewModel.setAltitudeLimit(true) },
+                        enabled = state.isConnected && !state.isAltitudeBusy && !state.isHardwareBusy,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Green,
+                            contentColor = BgDark,
+                            disabledContainerColor = Green.copy(0.2f),
+                            disabledContentColor = Green.copy(0.4f)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, Green.copy(0.3f)),
+                        modifier = Modifier.weight(1f).height(48.dp)
+                    ) {
+                        Text(stringResource(R.string.btn_altitude_500), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    }
+                    Button(
+                        onClick = { viewModel.setAltitudeLimit(false) },
+                        enabled = state.isConnected && !state.isAltitudeBusy && !state.isHardwareBusy,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = TextGray,
+                            disabledContainerColor = TextGray.copy(0.1f),
+                            disabledContentColor = TextGray.copy(0.3f)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.5.dp, TextGray.copy(0.5f)),
+                        modifier = Modifier.weight(1f).height(48.dp)
+                    ) {
+                        Text(stringResource(R.string.btn_altitude_120), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    }
+                }
+            }
+        }
+
         // Auto-FCC toggle card
         Spacer(Modifier.height(16.dp))
         GlowCard {

@@ -54,6 +54,9 @@ data class AppState(
     val isLedBusy: Boolean = false,
     val ledStatus: String = "",
     val ledTone: Tone = Tone.INFO,
+    val isAltitudeBusy: Boolean = false,
+    val altitudeStatus: String = "",
+    val altitudeTone: Tone = Tone.INFO,
     val logMessages: List<LogEntry> = emptyList(),
     val isExportingLog: Boolean = false,
     val language: String = "",
@@ -684,31 +687,7 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
                 val profile = Profiles.load(app, AircraftProfile.ledAsset(AircraftProfile.get(app), on))
                 log(s(R.string.log_led_profile_loaded, profile.frames.size, profile.port), Tone.BUSY)
 
-                // Separate transport instance - the LED command on port 40007/40008
-                // must not share state with the FCC transport on port 40009.
-                val ledTransport = DumlTransport()
-
-                var anySuccess = false
-
-                // 2 connection bursts × 5 writes each = 10 total sends, with
-                // 100ms between writes and 100ms between bursts. Matches the
-                // reference app's reliability pattern.
-                for (attempt in 0 until 2) {
-                    if (attempt > 0) delay(100)
-
-                    val success = ledTransport.sendFrames(
-                        frames = profile.frames,
-                        rounds = 5,
-                        interFrameDelayMs = 100,
-                        interRoundDelayMs = 0,
-                        readWindowMs = 100,
-                        port = profile.port
-                    )
-
-                    if (success) anySuccess = true
-                }
-
-                if (anySuccess) {
+                if (writeParamProfile(profile)) {
                     update {
                         copy(
                             isLedBusy = false,
@@ -724,6 +703,85 @@ class FccViewModel(private val app: Application) : AndroidViewModel(app) {
             } catch (e: Exception) {
                 log(s(R.string.log_led_error, e.message.orEmpty()), Tone.ERROR)
                 update { copy(isLedBusy = false, ledStatus = s(R.string.error_fmt, e.message.orEmpty()), ledTone = Tone.ERROR) }
+            }
+        }
+    }
+
+    /**
+     * Writes one flight-controller parameter profile (LED, altitude limit) on its
+     * own transport and port: 2 connection bursts x 5 writes each (10 sends),
+     * 100 ms between writes and between bursts - the reference app's reliability
+     * pattern. Returns true when at least one burst was written.
+     */
+    private suspend fun writeParamProfile(profile: Profiles.Profile): Boolean {
+        // Separate transport instance - a parameter write on port 40007/40008
+        // must not share state with the FCC transport on port 40009.
+        val transport = DumlTransport()
+        var anySuccess = false
+        for (attempt in 0 until 2) {
+            if (attempt > 0) delay(100)
+            val success = transport.sendFrames(
+                frames = profile.frames,
+                rounds = 5,
+                interFrameDelayMs = 100,
+                interRoundDelayMs = 0,
+                readWindowMs = 100,
+                port = profile.port
+            )
+            if (success) anySuccess = true
+        }
+        return anySuccess
+    }
+
+    // --- Altitude limit ---
+
+    /**
+     * Writes the flight controller's max altitude: 500 m (unlock) or 120 m.
+     * Frames and port come from [AircraftProfile.altitudeAsset]; a profile without
+     * a measured write has no card, so the null branch only guards the API.
+     * Same transport pattern and the same no-HardwareLock reasoning as [setLed]:
+     * the write goes to the FLYC inject port, not the radio port the keepalive
+     * holds. The parameter persists across DJI Fly relinks (lmdegreeds dump on
+     * RC 2 + Lito X1), so it is sent once and never by the keepalive.
+     *
+     * @param unlock true for 500 m, false for 120 m
+     */
+    fun setAltitudeLimit(unlock: Boolean) {
+        if (_state.value.isAltitudeBusy) {
+            log(s(R.string.log_altitude_busy), Tone.ERROR)
+            return
+        }
+        val asset = AircraftProfile.altitudeAsset(AircraftProfile.get(app), unlock)
+        if (asset == null) {
+            log(s(R.string.log_altitude_no_profile), Tone.ERROR)
+            return
+        }
+        val metres = if (unlock) 500 else 120
+        val writing = s(R.string.altitude_writing_fmt, metres)
+        update { copy(isAltitudeBusy = true, altitudeStatus = writing, altitudeTone = Tone.BUSY) }
+        log(writing, Tone.BUSY)
+
+        runOnIO {
+            try {
+                val profile = Profiles.load(app, asset)
+                log(s(R.string.log_altitude_profile_loaded, profile.frames.size, profile.port), Tone.BUSY)
+
+                if (writeParamProfile(profile)) {
+                    update {
+                        copy(
+                            isAltitudeBusy = false,
+                            altitudeStatus = s(R.string.altitude_status_fmt, metres),
+                            altitudeTone = if (unlock) Tone.OK else Tone.INFO
+                        )
+                    }
+                    log(s(R.string.log_altitude_set, metres), Tone.OK)
+                } else {
+                    update { copy(isAltitudeBusy = false, altitudeStatus = s(R.string.altitude_status_failed), altitudeTone = Tone.ERROR) }
+                    log(s(R.string.log_altitude_failed), Tone.ERROR)
+                }
+            } catch (e: Exception) {
+                log(s(R.string.log_altitude_error, e.message.orEmpty()), Tone.ERROR)
+                update { copy(isAltitudeBusy = false, altitudeStatus = s(R.string.error_fmt, e.message.orEmpty()), altitudeTone = Tone.ERROR) }
             }
         }
     }

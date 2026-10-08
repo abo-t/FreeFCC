@@ -51,6 +51,14 @@
     <string name="led_status_fmt">Stan: %1$s</string>
     <string name="btn_led_on">LED WŁ.</string>
     <string name="btn_led_off">LED WYŁ.</string>
+    <string name="altitude_title">Pułap wysokości (Lito X1)</string>
+    <string name="altitude_desc">Zapisuje w kontrolerze lotu maksymalną wysokość: 500 m, czyli pułap, który Lito X1 sam deklaruje jako maksimum, albo z powrotem 120 m. Zostaje po ponownym połączeniu DJI Fly. Wymaga uruchomionego DJI Fly z połączonym dronem. Przepisy o wysokości w miejscu lotu obowiązują nadal.</string>
+    <string name="altitude_status_line">Stan: %1$s</string>
+    <string name="btn_altitude_500">500 m</string>
+    <string name="btn_altitude_120">120 m</string>
+    <string name="altitude_writing_fmt">Ustawianie pułapu %1$d m...</string>
+    <string name="altitude_status_fmt">%1$d m</string>
+    <string name="altitude_status_failed">Niepowodzenie - czy DJI Fly jest uruchomione?</string>
     <string name="autofcc_title">Auto-FCC</string>
     <string name="autofcc_desc">Sam łączy, włącza FCC, uruchamia podtrzymanie i otwiera DJI Fly.</string>
 
@@ -73,7 +81,7 @@
     <string name="aircraft_profile_title">Profil drona</string>
     <string name="aircraft_profile_universal">Uniwersalny</string>
     <string name="aircraft_profile_lito_x1">Lito X1</string>
-    <string name="aircraft_profile_hint">Ustala ramki FCC i komendę LED. Uniwersalny: 21 ramek FCC, sprawdzony na Mini 4/5 Pro, Air 3S, Neo i Avata 360. Lito X1: 2 ramki FCC wysyłane 8 razy co sekundę oraz parametr LED właściwy dla Lito X1 - zmierzone na RC 2 + Lito X1 przez projekt dji_fcc_gpsoff.</string>
+    <string name="aircraft_profile_hint">Ustala ramki FCC, komendę LED i, dla Lito X1, przyciski pułapu wysokości. Uniwersalny: 21 ramek FCC, sprawdzony na Mini 4/5 Pro, Air 3S, Neo i Avata 360. Lito X1: 2 ramki FCC wysyłane 8 razy co sekundę oraz parametr LED właściwy dla Lito X1 - zmierzone na RC 2 + Lito X1 przez projekt dji_fcc_gpsoff.</string>
     <string name="log_aircraft_profile_set">Profil drona: %1$s</string>
     <string name="log_ce_lito_power_cycle">Lito X1: żeby mieć pewność powrotu do CE, wyłącz i włącz drona.</string>
 
@@ -212,6 +220,12 @@
     <string name="log_led_off">LED wyłączone</string>
     <string name="log_led_failed">Komenda LED nieudana - upewnij się, że DJI Fly działa i dron jest połączony</string>
     <string name="log_led_error">Błąd LED: %1$s</string>
+    <string name="log_altitude_busy">Pułap zajęty - poczekaj.</string>
+    <string name="log_altitude_no_profile">Pułap: brak zmierzonego zapisu dla tego profilu drona</string>
+    <string name="log_altitude_profile_loaded">Wczytano profil pułapu: liczba ramek %1$d (port %2$d)</string>
+    <string name="log_altitude_set">Pułap zapisany: %1$d m - sprawdź suwak maksymalnej wysokości w DJI Fly</string>
+    <string name="log_altitude_failed">Zapis pułapu nieudany - upewnij się, że DJI Fly działa i dron jest połączony</string>
+    <string name="log_altitude_error">Błąd pułapu: %1$s</string>
     <string name="log_querying_info">Odczyt informacji o urządzeniu...</string>
     <string name="log_info_profile_empty">Informacje o urządzeniu: profil nie ma ramek</string>
     <string name="log_info_no_response">Informacje o urządzeniu: brak odpowiedzi</string>

@@ -51,6 +51,14 @@
     <string name="led_status_fmt">Status: %1$s</string>
     <string name="btn_led_on">LED ON</string>
     <string name="btn_led_off">LED OFF</string>
+    <string name="altitude_title">Altitude limit (Lito X1)</string>
+    <string name="altitude_desc">Writes the flight controller\'s max altitude: 500 m, the ceiling the Lito X1 itself reports as its maximum, or 120 m back. Stays after DJI Fly reconnects. Requires DJI Fly running with aircraft connected. The height rules where you fly still apply.</string>
+    <string name="altitude_status_line">Status: %1$s</string>
+    <string name="btn_altitude_500">500 m</string>
+    <string name="btn_altitude_120">120 m</string>
+    <string name="altitude_writing_fmt">Setting altitude limit to %1$d m...</string>
+    <string name="altitude_status_fmt">%1$d m</string>
+    <string name="altitude_status_failed">Failed - is DJI Fly running?</string>
     <string name="autofcc_title">Auto-FCC</string>
     <string name="autofcc_desc">Auto-connect, apply FCC, start keepalive, and launch DJI Fly.</string>
 
@@ -73,7 +81,7 @@
     <string name="aircraft_profile_title">Aircraft profile</string>
     <string name="aircraft_profile_universal">Universal</string>
     <string name="aircraft_profile_lito_x1">Lito X1</string>
-    <string name="aircraft_profile_hint">Sets the FCC frames and the LED command. Universal: 21 FCC frames, tested on Mini 4/5 Pro, Air 3S, Neo and Avata 360. Lito X1: 2 FCC frames sent 8 times, one second apart, and the Lito X1 LED parameter - measured on RC 2 + Lito X1 by the dji_fcc_gpsoff project.</string>
+    <string name="aircraft_profile_hint">Sets the FCC frames, the LED command and, for Lito X1, the altitude limit buttons. Universal: 21 FCC frames, tested on Mini 4/5 Pro, Air 3S, Neo and Avata 360. Lito X1: 2 FCC frames sent 8 times, one second apart, and the Lito X1 LED parameter - measured on RC 2 + Lito X1 by the dji_fcc_gpsoff project.</string>
     <string name="log_aircraft_profile_set">Aircraft profile: %1$s</string>
     <string name="log_ce_lito_power_cycle">Lito X1: to be sure CE is back, power the aircraft off and on.</string>
 
@@ -212,6 +220,12 @@
     <string name="log_led_off">LEDs turned off</string>
     <string name="log_led_failed">LED command failed - make sure DJI Fly is running with aircraft connected</string>
     <string name="log_led_error">LED error: %1$s</string>
+    <string name="log_altitude_busy">Altitude limit busy - please wait.</string>
+    <string name="log_altitude_no_profile">Altitude limit: no measured write for this aircraft profile</string>
+    <string name="log_altitude_profile_loaded">Loaded altitude profile: %1$d frames (port %2$d)</string>
+    <string name="log_altitude_set">Altitude limit written: %1$d m - check the max altitude slider in DJI Fly</string>
+    <string name="log_altitude_failed">Altitude limit write failed - make sure DJI Fly is running with aircraft connected</string>
+    <string name="log_altitude_error">Altitude limit error: %1$s</string>
     <string name="log_querying_info">Querying device info...</string>
     <string name="log_info_profile_empty">Device info: profile has no frames</string>
     <string name="log_info_no_response">Device info: no response</string>

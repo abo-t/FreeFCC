@@ -51,7 +51,26 @@ class AircraftProfileTest {
             asset(AircraftProfile.keepaliveAsset(code))
             asset(AircraftProfile.ledAsset(code, on = true))
             asset(AircraftProfile.ledAsset(code, on = false))
+            AircraftProfile.altitudeAsset(code, unlock = true)?.let { asset(it) }
+            AircraftProfile.altitudeAsset(code, unlock = false)?.let { asset(it) }
         }
+    }
+
+    /**
+     * The Lito X1 altitude buttons write g_config.flying_limit.max_height - the
+     * same hash and value the full fcc.json carries as its third frame (the one
+     * the 2-frame Lito X1 FCC profile dropped). Universal has no button: its
+     * Enable FCC already writes 500.
+     */
+    @Test
+    fun litoX1AltitudeWritesMaxHeightLikeFrameThreeOfTheFullProfile() {
+        val maxHeight = paramHash("g_config.flying_limit.max_height")
+        assertEquals("8a237103", maxHeight)
+        assertEquals(listOf("3:249:3:${maxHeight}f401"), frames(asset("altitude_500_lito_x1.json")))
+        assertEquals(listOf("3:249:3:${maxHeight}7800"), frames(asset("altitude_120_lito_x1.json")))
+        assertEquals("3:249:3:${maxHeight}f401", frames(asset("fcc.json"))[2])
+        assertEquals(null, AircraftProfile.altitudeAsset(AircraftProfile.UNIVERSAL, unlock = true))
+        assertEquals(null, AircraftProfile.altitudeAsset(AircraftProfile.UNIVERSAL, unlock = false))
     }
 
     @Test
@@ -80,8 +99,11 @@ class AircraftProfileTest {
     }
 
     @Test
-    fun litoX1LedGoesUnwrappedToTheInjectPort() {
-        listOf("led_on_lito_x1.json", "led_off_lito_x1.json").forEach { name ->
+    fun litoX1ParamWritesGoUnwrappedToTheInjectPort() {
+        listOf(
+            "led_on_lito_x1.json", "led_off_lito_x1.json",
+            "altitude_500_lito_x1.json", "altitude_120_lito_x1.json"
+        ).forEach { name ->
             val json = asset(name)
             assertEquals(40008, intField(json, "port"))
             assertTrue("$name must not be wrapped", !json.contains("\"wrapper\": true"))

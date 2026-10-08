@@ -9,7 +9,8 @@ import androidx.annotation.StringRes
  * - "universal" - the upstream profiles: fcc.json (21 frames, tested on Mini 4/5 Pro,
  *   Air 3S, Neo, Avata 360) and the LED write by the g_config.* parameter name on 40007.
  * - "lito_x1" - measured on RC 2 + Lito X1 by lmdegreeds/dji_fcc_gpsoff: fcc_lito_x1.json
- *   (2 frames) and the LED write by the Lito X1 name forearm_led_ctrl on 40008.
+ *   (2 frames), the LED write by the Lito X1 name forearm_led_ctrl on 40008, and the
+ *   altitude limit write (max_height 500 / 120) on the same port.
  *
  * The choice lives in the app's SharedPreferences like [Lang], so the Activity,
  * the ViewModel and the keepalive service all read the same value.
@@ -65,6 +66,20 @@ object AircraftProfile {
     fun ledAsset(code: String, on: Boolean): String = when (code) {
         UNIVERSAL -> if (on) "led_on.json" else "led_off.json"
         LITO_X1 -> if (on) "led_on_lito_x1.json" else "led_off_lito_x1.json"
+        else -> error("Unknown aircraft profile: $code")
+    }
+
+    /**
+     * Asset for the altitude limit buttons (500 m / 120 m), or null when the profile
+     * has no measured write for it - the card is then hidden. Lito X1 writes
+     * g_config.flying_limit.max_height by hash on 40008: the frame the full fcc.json
+     * carries as its third and fcc_lito_x1.json dropped (lmdegreeds dump on
+     * RC 2 + Lito X1: 120 -> 500, persists across a DJI Fly relink). Universal has
+     * none: fcc.json already writes 500 inside Enable FCC.
+     */
+    fun altitudeAsset(code: String, unlock: Boolean): String? = when (code) {
+        UNIVERSAL -> null
+        LITO_X1 -> if (unlock) "altitude_500_lito_x1.json" else "altitude_120_lito_x1.json"
         else -> error("Unknown aircraft profile: $code")
     }
 }

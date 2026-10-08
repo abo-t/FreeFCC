@@ -1,0 +1,16 @@
+{
+  "name": "Altitude limit 500 m (Lito X1)",
+  "description": "Writes the flight controller parameter g_config.flying_limit.max_height = 500 by name hash (8a237103, value 0x01F4 U16 LE) on the unwrapped FLYC inject port 40008, the same port and framing as the Lito X1 LED write. It is the same write as frame 3 of fcc.json: lmdegreeds/dji_fcc_gpsoff measured it on RC 2 + Lito X1 (aircraft 01.00.0400) - the limit moves 120 -> 500, stays after a DJI Fly relink, and 500 is the maximum the flight controller itself declares for this parameter (doc/PROTOCOL.md, doc/config-table-commands.md). doesthings/FreeFCC issue #9 confirms 500 m in DJI Fly on a Lito X1 after the full profile. One frame; the write persists, so nothing re-sends it.",
+  "sender": 2,
+  "sender_desc": "MOBILE_APP, index 0",
+  "cmd_type": 64,
+  "cmd_type_desc": "Request with ACK, no encryption (0x40)",
+  "rounds": 1,
+  "inter_frame_delay_ms": 100,
+  "inter_round_delay_ms": 0,
+  "read_window_ms": 100,
+  "port": 40008,
+  "frames": [
+    { "s": 3, "i": 249, "d": 3, "p": "8a237103f401", "note": "FLYCONTROLLER write param by hash: g_config.flying_limit.max_height = 500 (0x01F4 LE)" }
+  ]
+}

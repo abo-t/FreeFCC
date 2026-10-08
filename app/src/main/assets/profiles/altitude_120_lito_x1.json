@@ -1,0 +1,16 @@
+{
+  "name": "Altitude limit 120 m (Lito X1)",
+  "description": "Writes the flight controller parameter g_config.flying_limit.max_height = 120 by name hash (8a237103, value 0x0078 U16 LE) on the unwrapped FLYC inject port 40008 - the way back from altitude_500_lito_x1.json. 120 is the value the parameter holds on a CE unit before any FCC profile (lmdegreeds/dji_fcc_gpsoff doc/config-table-commands.md, before/after dump on RC 2 + Lito X1).",
+  "sender": 2,
+  "sender_desc": "MOBILE_APP, index 0",
+  "cmd_type": 64,
+  "cmd_type_desc": "Request with ACK, no encryption (0x40)",
+  "rounds": 1,
+  "inter_frame_delay_ms": 100,
+  "inter_round_delay_ms": 0,
+  "read_window_ms": 100,
+  "port": 40008,
+  "frames": [
+    { "s": 3, "i": 249, "d": 3, "p": "8a2371037800", "note": "FLYCONTROLLER write param by hash: g_config.flying_limit.max_height = 120 (0x0078 LE)" }
+  ]
+}
